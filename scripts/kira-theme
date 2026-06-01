@@ -1,0 +1,105 @@
+USR_DIR=$HOME/.config/kira-desktop/themes
+ROOT_DIR=/usr/share/kira-desktop/themes
+
+USR_TPL_DIR=$HOME/.config/kira-desktop/templates
+ROOT_TPL_DIR=/usr/share/kira-desktop/templates
+
+CONFIG=$HOME/.config
+
+COMPONENTS="eww/bar.css eww/bar.yuck foot/foot.ini fuzzel/fuzzel.ini gtk/gtk.css mako/mako.css sway/config swaylock/config"
+
+if [ ! -d "$USR_DIR" ]; then
+    mkdir -p $USR_DIR
+fi
+
+func=$1
+
+if [ -z "$func" ]; then
+    echo "No usage guide yet, just try and see x)"
+    exit 1
+fi
+
+if [ "$func" = "current" ]; then
+    cat $USR_DIR/current.theme
+fi
+
+if [ "$func" = "list" ]; then
+    echo "User themes:"
+    for file in "$USR_DIR"/*; do
+        echo $(basename $file)
+    done
+    echo ""
+    echo "System themes:"
+    for file in "$ROOT_DIR"/*; do
+        echo $(basename $file)
+    done
+fi
+
+if [ "$func" = "apply" ]; then
+    # step 1 : check argument
+    name=$2
+    if [ -z "$name" ]; then
+        echo "Please specify a theme name"
+        exit 1
+    fi
+
+    # step 2 : check if theme exists
+
+    if [ -f "$USR_DIR/$name.theme" ]; then
+        theme=$USR_DIR/$name.theme
+    elif [ -f "$ROOT_DIR/$name.theme" ]; then
+        theme=$ROOT_DIR/$name.theme
+    else
+        echo "Theme $name not found"
+        exit 1
+    fi
+
+    # step 3 : parse theme file in memory
+
+    touch /tmp/kira-desktop.theme
+    #build a sed expression for each line
+    while IFS= read -r line; do
+        case "$line" in
+            '#'*) continue ;;  # comment
+            '')   continue ;;  # blank
+        esac
+
+        key=$(echo $line | cut -d= -f1 | xargs)
+        value=$(echo $line | cut -d= -f2 | xargs)
+        echo "s|%$key%|$value|g" >> /tmp/kira-desktop.theme
+    done <"$theme"
+
+    # step 4 : apply theme
+    
+    for componentTPL in $COMPONENTS; do
+        componentPath=$componentTPL
+        componentTPL=$componentTPL.tpl
+        if [ -f "$USR_TPL_DIR/$componentTPL" ]; then
+            componentTPL=$USR_TPL_DIR/$componentTPL
+        elif [ -f "$ROOT_TPL_DIR/$componentTPL" ]; then
+            componentTPL=$ROOT_TPL_DIR/$componentTPL
+        else
+            echo "Template $componentTPL not found"
+            continue
+        fi
+
+        mkdir -p $CONFIG/$(dirname $componentPath)
+
+        sed -f /tmp/kira-desktop.theme $componentTPL > $HOME/.config/$componentPath
+    done
+
+    # step 5 : Write current theme to config
+
+    echo $name > $USR_DIR/current.theme
+
+    # step 6 : reload daemons
+    if [ -n "$SWAYSOCK" ]; then
+        swaymsg reload
+        makoctl reload
+        eww kill && eww open bar  # "bar" = eww window name, defined in bar.yuck
+    fi
+
+    # step 7 : done !
+    rm /tmp/kira-desktop.theme
+    echo "Theme $name applied"
+fi

@@ -1,0 +1,22 @@
+# comment lines start with #
+# blank lines are ignored
+# format: key = value (spaces around = are stripped)
+# all values are hex colors unless otherwise noted
+# non-color tokens (name, author) are also valid
+
+name    = Kira Default
+author  = OxoGhost
+
+base        = #0a0a0f
+surface0    = #12101a
+surface1    = #1c1828
+surface2    = #2a2240
+overlay     = #3d3060
+muted       = #6b4f9e
+text        = #e8d8ff
+subtext     = #b09acc
+primary     = #aa00ff
+primary_dim = #7700cc
+secondary   = #ff00aa
+green       = #00ff88
+yellow      = #ffcc00
