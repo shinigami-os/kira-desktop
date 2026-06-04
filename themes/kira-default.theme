@@ -47,3 +47,14 @@ sl_primary     = aa00ffff
 sl_primary_dim = 7700ccff
 sl_secondary   = ff00aaff
 sl_yellow      = ffcc00ff
+
+# Foot colors (rrggbb, no #)
+ft_base        = 0a0a0f
+ft_text        = e8d8ff
+ft_subtext     = b09acc
+ft_muted       = 6b4f9e
+ft_primary     = aa00ff
+ft_primary_dim = 7700cc
+ft_secondary   = ff00aa
+ft_green       = 00ff88
+ft_yellow      = ffcc00
