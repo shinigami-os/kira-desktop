@@ -29,3 +29,10 @@ fz_text        = e8d8ffff
 fz_primary     = aa00ffff
 fz_primary_dim = 7700ccff
 fz_secondary   = ff00aaff
+
+# Mako colors (#rrggbbaa format)
+mk_surface1  = 1c1828ff
+mk_text      = e8d8ffff
+mk_primary   = aa00ffcc
+mk_muted     = 6b4f9eff
+mk_secondary = ff00aaff
