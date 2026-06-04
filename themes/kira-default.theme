@@ -58,3 +58,5 @@ ft_primary_dim = 7700cc
 ft_secondary   = ff00aa
 ft_green       = 00ff88
 ft_yellow      = ffcc00
+ft_cyan        = 00cccc
+ft_cyan_bright = 00ffff
