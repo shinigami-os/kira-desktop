@@ -20,3 +20,12 @@ primary_dim = #7700cc
 secondary   = #ff00aa
 green       = #00ff88
 yellow      = #ffcc00
+
+# Fuzzel colors (rrggbbaa format, no #)
+fz_base        = 0a0a0fff
+fz_surface0    = 12101aee
+fz_surface2    = 2a2240ff
+fz_text        = e8d8ffff
+fz_primary     = aa00ffff
+fz_primary_dim = 7700ccff
+fz_secondary   = ff00aaff
