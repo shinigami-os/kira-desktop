@@ -161,6 +161,7 @@ exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DE
 exec mako
 exec_always $HOME/.config/eww/launch-bars.sh
 exec swaybg -c %base%
+exec flameshot &
 
 # --- Others ---
 
