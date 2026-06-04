@@ -12,7 +12,7 @@ set $term foot
 set $launcher fuzzel
 set $files thunar
 set $settings kira-settings
-set $locker swaylock-effects --effect-blur 7x5 --clock --indicator --screenshots
+set $locker swaylock-effects --image $(cat $HOME/.config/kira-desktop/current-wallpaper 2>/dev/null) --effect-blur 7x5 --clock
 set $runner  kira-run
 set $calc    menu-qalc-wayland
 
