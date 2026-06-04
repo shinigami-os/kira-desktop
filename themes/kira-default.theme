@@ -36,3 +36,14 @@ mk_text      = e8d8ffff
 mk_primary   = aa00ffcc
 mk_muted     = 6b4f9eff
 mk_secondary = ff00aaff
+
+# Swaylock colors (rrggbbaa, no #)
+sl_base        = 0a0a0fcc
+sl_surface0    = 12101aff
+sl_surface1    = 1c1828ff
+sl_surface2    = 2a2240ff
+sl_text        = e8d8ffff
+sl_primary     = aa00ffff
+sl_primary_dim = 7700ccff
+sl_secondary   = ff00aaff
+sl_yellow      = ffcc00ff
