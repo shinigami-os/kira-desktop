@@ -13,6 +13,8 @@ set $launcher fuzzel
 set $files thunar
 set $settings kira-settings
 set $locker swaylock-effects --effect-blur 7x5 --clock --indicator --screenshots
+set $runner  kira-run
+set $calc    menu-qalc-wayland
 
 font pango:Raleway 11
 
@@ -139,6 +141,10 @@ bindsym $mod+l              exec $locker
 
 # Reload
 bindsym $mod+Shift+r        reload
+
+# Widgets
+bindsym $mod+r exec $runner
+bindsym $mod+c exec $calc
 
 # --- Floating rules ---
 # Define which windows open floating by default
