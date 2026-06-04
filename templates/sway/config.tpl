@@ -10,7 +10,7 @@
 set $mod Mod4
 set $term foot
 set $launcher fuzzel
-set $files thunar
+set $files axfm
 set $settings kira-settings
 set $locker swaylock-effects --image $(cat $HOME/.config/kira-desktop/current-wallpaper 2>/dev/null) --effect-blur 7x5 --clock
 set $runner  kira-run
