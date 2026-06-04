@@ -10,7 +10,19 @@ CONFIG=$HOME/.config
 
 KIRA_CONFIG=$HOME/.config/kira-desktop
 
-COMPONENTS="eww/bar.css eww/bar.yuck eww/launch-bars.sh foot/foot.ini fuzzel/fuzzel.ini gtk/gtk.css gtk/settings.ini mako/mako.css sway/config swaylock/config portal/xdg-desktop-portal.conf"
+COMPONENTS="
+    eww/bar.css
+    eww/bar.yuck
+    eww/launch-bars.sh
+    foot/foot.ini
+    fuzzel/fuzzel.ini
+    gtk/gtk.css
+    gtk/settings.ini
+    mako/config
+    portal/xdg-desktop-portal.conf
+    sway/config
+    swaylock/config
+"
 
 if [ ! -d "$USR_DIR" ]; then
     mkdir -p $USR_DIR
