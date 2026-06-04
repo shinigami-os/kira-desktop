@@ -1,3 +1,5 @@
+#!/bin/sh
+
 USR_DIR=$HOME/.config/kira-desktop/themes
 ROOT_DIR=/usr/share/kira-desktop/themes
 
@@ -5,6 +7,8 @@ USR_TPL_DIR=$HOME/.config/kira-desktop/templates
 ROOT_TPL_DIR=/usr/share/kira-desktop/templates
 
 CONFIG=$HOME/.config
+
+KIRA_CONFIG=$HOME/.config/kira-desktop
 
 COMPONENTS="eww/bar.css eww/bar.yuck foot/foot.ini fuzzel/fuzzel.ini gtk/gtk.css mako/mako.css sway/config swaylock/config"
 
@@ -67,7 +71,9 @@ if [ "$func" = "apply" ]; then
         key=$(echo $line | cut -d= -f1 | xargs)
         value=$(echo $line | cut -d= -f2 | xargs)
         echo "s|%$key%|$value|g" >> /tmp/kira-desktop.theme
+        echo "s|%KIRA_CONFIG%|$HOME/.config/kira-desktop|g" >> /tmp/kira-desktop.theme
     done <"$theme"
+
 
     # step 4 : apply theme
     
@@ -96,7 +102,8 @@ if [ "$func" = "apply" ]; then
     if [ -n "$SWAYSOCK" ]; then
         swaymsg reload
         makoctl reload
-        eww kill && eww open bar  # "bar" = eww window name, defined in bar.yuck
+        eww kill 2>/dev/null
+        ~/.config/eww/launch-bars.sh  # small script to launch eww bar on each monitor
     fi
 
     # step 7 : done !
