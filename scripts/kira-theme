@@ -10,19 +10,23 @@ CONFIG=$HOME/.config
 
 KIRA_CONFIG=$HOME/.config/kira-desktop
 
-COMPONENTS="
-    eww/bar.css
-    eww/bar.yuck
-    eww/launch-bars.sh
-    foot/foot.ini
-    fuzzel/fuzzel.ini
-    gtk/gtk.css
-    gtk/settings.ini
-    mako/config
-    portal/xdg-desktop-portal.conf
-    sway/config
-    swaylock/config
-"
+SHARED_COMPONENTS=""
+
+ACTIVE_DE=$(cat $HOME/.config/kira-desktop/active-de 2>/dev/null || echo "swayFX")
+
+case "$ACTIVE_DE" in
+    swayFX) DE_COMPONENTS="eww/bar.css eww/bar.yuck eww/launch-bars.sh foot/foot.ini fuzzel/fuzzel.ini gtk/gtk.css gtk/settings.ini mako/config xdg-desktop-portal/portals.conf sway/config swaylock/config" ;;
+    sleex)  DE_COMPONENTS="sleex/sleex.conf" ;;
+esac
+
+COMPONENTS="$SHARED_COMPONENTS $DE_COMPONENTS"
+
+REQUIRED_TOKENS="base surface0 surface1 surface2 overlay muted text subtext
+primary primary_dim secondary green yellow cyan cyan_bright
+fz_base fz_surface0 fz_surface2 fz_text fz_primary fz_primary_dim fz_secondary
+mk_surface1 mk_text mk_primary mk_muted mk_secondary
+sl_base sl_surface0 sl_surface1 sl_surface2 sl_text sl_primary sl_primary_dim sl_secondary sl_yellow
+ft_base ft_text ft_subtext ft_muted ft_primary ft_primary_dim ft_secondary ft_green ft_yellow ft_cyan ft_cyan_bright"
 
 if [ ! -d "$USR_DIR" ]; then
     mkdir -p $USR_DIR
@@ -49,6 +53,100 @@ if [ "$func" = "list" ]; then
     for file in "$ROOT_DIR"/*; do
         echo $(basename $file)
     done
+fi
+
+if [ "$func" = "validate" ]; then
+    name=$2
+
+    if [ -z "$name" ]; then
+        echo "Please specify a theme name"
+        exit 1
+    fi
+
+    if [ -f "$USR_DIR/$name.theme" ]; then
+        theme=$USR_DIR/$name.theme
+    elif [ -f "$ROOT_DIR/$name.theme" ]; then
+        theme=$ROOT_DIR/$name.theme
+    else
+        echo "Theme '$name' not found"
+        exit 1
+    fi
+
+    # Parse theme into key=value temp file
+    tmp=/tmp/kira-desktop-validate
+    rm -f "$tmp"
+    touch "$tmp"
+
+    while IFS= read -r line; do
+        case "$line" in
+            '#'*) continue ;;
+            '')   continue ;;
+        esac
+        key=$(echo "$line" | cut -d= -f1 | xargs)
+        value=$(echo "$line" | cut -d= -f2 | xargs)
+        echo "$key=$value" >> "$tmp"
+    done <"$theme"
+
+    # Validate
+    errors=0
+    warnings=0
+
+    for token in $REQUIRED_TOKENS; do
+        line=$(grep "^$token=" "$tmp")
+        if [ -z "$line" ]; then
+            echo "  MISSING   $token"
+            errors=$((errors + 1))
+            continue
+        fi
+
+        value=$(echo "$line" | cut -d= -f2)
+
+        # fz_/mk_/sl_/ft_ tokens expect 8-digit hex (no #)
+        case "$token" in
+            fz_*|mk_*|sl_*|ft_*)
+                if ! echo "$value" | grep -qE '^[0-9a-fA-F]{8}$'; then
+                    echo "  INVALID   $token = '$value' (expected 8-digit hex, no #)"
+                    errors=$((errors + 1))
+                fi
+                ;;
+            *)
+                if ! echo "$value" | grep -qE '^#[0-9a-fA-F]{6}$'; then
+                    echo "  INVALID   $token = '$value' (expected #rrggbb)"
+                    errors=$((errors + 1))
+                fi
+                ;;
+        esac
+    done
+
+    # Warn about unknown tokens (present in theme but not in REQUIRED_TOKENS)
+    while IFS= read -r line; do
+        key=$(echo "$line" | cut -d= -f1)
+        case "$key" in
+            name|author) continue ;;
+        esac
+        found=0
+        for token in $REQUIRED_TOKENS; do
+            if [ "$token" = "$key" ]; then
+                found=1
+                break
+            fi
+        done
+        if [ "$found" = "0" ]; then
+            echo "  UNKNOWN   $key (not used by any template)"
+            warnings=$((warnings + 1))
+        fi
+    done <"$tmp"
+
+    rm -f "$tmp"
+
+    echo ""
+    echo "Result: $errors error(s), $warnings warning(s)"
+    if [ "$errors" = "0" ]; then
+        echo "Theme '$name' is valid."
+    else
+        echo "Theme '$name' has errors."
+        exit 1
+    fi
 fi
 
 if [ "$func" = "apply" ]; then
