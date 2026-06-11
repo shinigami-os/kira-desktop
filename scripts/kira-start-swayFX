@@ -1,5 +1,4 @@
 #!/bin/sh
-
 export XDG_CURRENT_DESKTOP=sway
 export XDG_SESSION_TYPE=wayland
 export QT_QPA_PLATFORM=wayland
@@ -7,6 +6,8 @@ export MOZ_ENABLE_WAYLAND=1
 export SDL_VIDEODRIVER=wayland
 export _JAVA_AWT_WM_NONREPARENTING=1
 export FLAMESHOT_WAYLAND=1
+export XDG_RUNTIME_DIR=/run/user/$(id -u)
+mkdir -p "$XDG_RUNTIME_DIR"
+chmod 700 "$XDG_RUNTIME_DIR"
 
 exec dbus-run-session sway
-
