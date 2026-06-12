@@ -170,7 +170,9 @@ if [ "$func" = "apply" ]; then
 
     # step 3 : parse theme file in memory
 
+    echo "DEBUG: creating temp file"
     touch /tmp/kira-desktop.theme
+    echo "DEBUG: temp file exists: $(ls -la /tmp/kira-desktop.theme)"
     #build a sed expression for each line
     while IFS= read -r line; do
         case "$line" in
