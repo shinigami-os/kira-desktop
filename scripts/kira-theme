@@ -202,6 +202,10 @@ if [ "$func" = "apply" ]; then
         mkdir -p $CONFIG/$(dirname $componentPath)
 
         sed -f /tmp/kira-desktop.theme $componentTPL > $HOME/.config/$componentPath
+
+        case "$componentPath" in
+            *.sh) chmod +x "$CONFIG/$componentPath" ;;
+        esac
     done
 
     # step 5 : Write current theme to config
