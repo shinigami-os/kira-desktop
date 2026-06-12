@@ -167,4 +167,3 @@ exec flameshot &
 
 xwayland enable
 focus_follows_mouse yes
-workspace_layout splith
