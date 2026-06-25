@@ -1,22 +1,26 @@
+/* ============================================================
+   Kira Linux - eww bar CSS
+   ============================================================ */
+
 * {
     font-family: "Raleway", sans-serif;
     font-size: 13px;
     color: #e8d8ff;
+    all: unset;
 }
 
 .bar {
     background: #12101a;
     border-bottom: 1px solid #2a2240;
-    padding: 0 12px;
+    padding: 0 8px;
 }
 
-.bar-left {
-    padding-left: 8px;
-}
+/* -- Layout ------------------------------------------------- */
 
-.bar-right {
-    padding-right: 8px;
-}
+.bar-left   { padding-left: 8px; }
+.bar-right  { padding-right: 8px; }
+
+/* -- Window title ------------------------------------------- */
 
 .window-title {
     color: #b09acc;
@@ -24,72 +28,88 @@
     padding: 0 4px;
 }
 
+/* -- Music -------------------------------------------------- */
+
 .music {
-    padding: 0 6px;
-    border-radius: 6px;
-}
-
-.music-icon {
     color: #aa00ff;
-    font-family: "JetBrainsMono Nerd Font";
-}
-
-.music-title {
-    color: #e8d8ff;
     font-size: 12px;
+    padding: 0 8px;
 }
 
-.sysstat {
-    padding: 2px 8px;
-    border-radius: 6px;
-    background: #1c1828;
+/* -- Metric widget ------------------------------------------ */
+
+.metric {
+    padding: 0 6px;
 }
 
-.sysstat-icon {
+.metric-icon {
+    font-family: "JetBrainsMono Nerd Font";
+    font-size: 12px;
+    color: #7700cc;
+    min-width: 16px;
+}
+
+.metric-bar {
+    min-width: 60px;
+}
+
+.metric-bar trough {
+    min-height: 4px;
+    border-radius: 2px;
+    background: #2a2240;
+}
+
+.metric-bar highlight {
+    background: #aa00ff;
+    border-radius: 2px;
+}
+
+.metric-bar slider {
+    min-width: 0;
+    min-height: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.metric-label {
     font-family: "JetBrainsMono Nerd Font";
     font-size: 11px;
-    color: #7700cc;
-}
-
-.sysstat-val {
-    font-family: "JetBrainsMono Nerd Font";
-    font-size: 12px;
     color: #e8d8ff;
+    min-width: 30px;
 }
 
-.workspaces {
+.temp-label {
+    font-family: "JetBrainsMono Nerd Font";
+    font-size: 11px;
+    color: #b09acc;
     padding: 0 4px;
 }
 
-.workspace-btn {
+/* -- Workspaces --------------------------------------------- */
+
+.workspaces {
+    padding: 0 8px;
+}
+
+.ws-btn {
     font-family: "JetBrainsMono Nerd Font";
-    font-size: 14px;
+    font-size: 15px;
     color: #6b4f9e;
     background: transparent;
     border: none;
     border-radius: 6px;
     padding: 2px 6px;
-    transition: all 0.15s ease;
+    margin: 0 1px;
 }
 
-.workspace-btn:hover {
-    color: #e8d8ff;
-    background: #1c1828;
-}
+.ws-btn:hover  { color: #e8d8ff; background: #1c1828; }
+.ws-btn.focused { color: #aa00ff; background: #1c1828; }
+.ws-btn.urgent  { color: #ff00aa; background: #1c1828; }
 
-.workspace-btn.focused {
-    color: #aa00ff;
-    background: #1c1828;
-}
+/* -- Clock -------------------------------------------------- */
 
-.workspace-btn.urgent {
-    color: #ff00aa;
-    background: #1c1828;
-}
-
-.clock {
-    padding: 0 6px;
-}
+.clock { padding: 0 8px; }
 
 .clock-time {
     font-family: "JetBrainsMono Nerd Font";
@@ -101,51 +121,27 @@
 .clock-date {
     font-size: 11px;
     color: #b09acc;
+    padding-left: 4px;
 }
 
-.volume {
-    padding: 2px 8px;
-    border-radius: 6px;
-    background: #1c1828;
-}
+/* -- Network ------------------------------------------------ */
 
-.volume-icon {
+.net { padding: 0 6px; }
+
+.net-icon {
     font-family: "JetBrainsMono Nerd Font";
     color: #aa00ff;
+    font-size: 13px;
 }
 
-.volume-val {
-    font-family: "JetBrainsMono Nerd Font";
-    font-size: 12px;
-}
+.net-label { font-size: 12px; }
 
-.network {
-    padding: 2px 8px;
-    border-radius: 6px;
-    background: #1c1828;
-}
+/* -- Battery ------------------------------------------------ */
 
-.network-icon {
+.battery { padding: 0 6px; }
+
+.bat-icon {
     font-family: "JetBrainsMono Nerd Font";
     color: #aa00ff;
-}
-
-.network-val {
-    font-size: 12px;
-}
-
-.battery {
-    padding: 2px 8px;
-    border-radius: 6px;
-    background: #1c1828;
-}
-
-.battery-icon {
-    font-family: "JetBrainsMono Nerd Font";
-    color: #aa00ff;
-}
-
-.battery-val {
-    font-family: "JetBrainsMono Nerd Font";
-    font-size: 12px;
+    font-size: 13px;
 }
