@@ -5,7 +5,6 @@ export QT_QPA_PLATFORM=wayland
 export MOZ_ENABLE_WAYLAND=1
 export SDL_VIDEODRIVER=wayland
 export _JAVA_AWT_WM_NONREPARENTING=1
-export FLAMESHOT_WAYLAND=1
 export WLR_DRM_NO_ATOMIC=1
 export XDG_RUNTIME_DIR=/run/user/$(id -u)
 mkdir -p "$XDG_RUNTIME_DIR"
