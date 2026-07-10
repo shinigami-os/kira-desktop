@@ -1,0 +1,361 @@
+;; ╔══════════════════════════════════════════════════════════════════╗
+;; ║  Kira Shell · Phase 2 · popups + modals                          ║
+;; ╚══════════════════════════════════════════════════════════════════╝
+
+;; ─────────────────────────── popup data ───────────────────────────
+(defvar caljson '{"month":"","year":"","weeks":[],"foot":""}')
+(defvar notiflist "[]")
+(defvar toggles '{"bt":false,"dnd":false,"night":false}')
+(defvar lch_results "[]")
+(defvar query "")
+
+(defpoll batjson  :interval "10s" :initial '{"present":false,"charging":false,"low":false,"pct":0,"cells":[0,0,0,0,0]}' "scripts/batjson.sh")
+(defpoll bri      :interval "3s"  :initial "50"  "scripts/bri.sh")
+(defpoll cores    :interval "2s"  :initial "[]"  "scripts/cores.py")
+(defpoll procs    :interval "3s"  :initial "[]"  "scripts/procs.py")
+(defpoll musjson  :interval "1s"  :initial '{"status":"Stopped","title":"nothing playing","artist":"","glyph":"mu","pos":"0:00","len":"0:00","pct":0}' "scripts/music.sh")
+(defpoll pkgs     :interval "3600s" :initial "0" "scripts/pkgs.sh")
+(defpoll upstr    :interval "60s" :initial ""    "scripts/uptime.sh")
+(defpoll kernelstr :interval "3600s" :initial "shinigami" "uname -r")
+(defpoll bigspark   :interval "2s"  :initial "/tmp/kira-sys/spark.svg" "scripts/cpu_hist.sh")
+(defpoll ramlong    :interval "3s"  :initial "0.0 / 0 GiB" "scripts/ramlong.sh")
+
+;; ══════════════════════════ CALENDAR ══════════════════════════
+
+(defwidget cal-cell [c]
+  (box :class "cal-cell ${c.today ? "cal-today" : ""}" :width 40 :height 30
+       :halign "fill" :hexpand true
+    (label :class "cal-cell-txt ${c.today ? "cal-today-txt" : ""}" :text {c.t})))
+
+(defwidget popup-calendar-w []
+  (box :class "popup popin" :orientation "v" :space-evenly false
+    (box :class "cal-head" :space-evenly false
+      (label :class "cal-month" :halign "start" :text {caljson.month})
+      (label :class "cal-year" :halign "end" :hexpand true :text {caljson.year}))
+    (box :class "cal-dow" :space-evenly true
+      (label :text "mo") (label :text "tu") (label :text "we")
+      (label :text "th") (label :text "fr") (label :text "sa") (label :text "su"))
+    (box :class "cal-grid" :orientation "v" :space-evenly false :spacing 2
+      (for wk in {caljson.weeks}
+        (box :space-evenly true
+          (for c in wk (cal-cell :c c)))))
+    (label :class "popup-foot" :halign "start" :text {caljson.foot})))
+
+(defwindow popup-calendar
+  :monitor 0
+  :geometry (geometry :x "0" :y "83px" :width "320px" :anchor "top center")
+  :stacking "overlay" :exclusive false :namespace "eww-popup"
+  (popup-calendar-w))
+
+;; ══════════════════════════ CONTROL CENTER ══════════════════════════
+
+(defwidget ctl-toggle [label active sub onclick]
+  (eventbox :onclick onclick :cursor "pointer"
+    (box :class "ctl-card ${active ? "ctl-on" : ""}" :orientation "v" :space-evenly false :spacing 7
+      (box :space-evenly false
+        (label :class "ctl-label" :halign "start" :text label)
+        (box :class "ctl-track ${active ? "trk-on" : ""}" :halign "end" :hexpand true :valign "center"
+          (box :class "ctl-knob ${active ? "knb-on" : ""}" :halign {active ? "end" : "start"})))
+      (label :class "ctl-sub" :halign "start" :text sub))))
+
+(defwidget popup-control-w []
+  (box :class "popup popin" :orientation "v" :space-evenly false
+    (label :class "popup-title" :halign "start" :text "control")
+    (box :orientation "v" :space-evenly false :spacing 10
+      (box :space-evenly true :spacing 10
+        (ctl-toggle :label "wifi" :active false :sub "phase 3" :onclick "true")
+        (ctl-toggle :label "bluetooth" :active {toggles.bt} :sub {toggles.bt ? "on" : "off"} :onclick "scripts/toggle.sh bt"))
+      (box :space-evenly true :spacing 10
+        (ctl-toggle :label "do not disturb" :active {toggles.dnd} :sub {toggles.dnd ? "silence." : "notifications pass"} :onclick "scripts/toggle.sh dnd")
+        (ctl-toggle :label "night light" :active {toggles.night} :sub {toggles.night ? "warm" : "off"} :onclick "scripts/toggle.sh night")))
+    (box :class "ctl-slider-block" :orientation "v" :space-evenly false :spacing 6
+      (box :space-evenly false
+        (label :class "ctl-slider-lbl" :halign "start" :text "volume")
+        (label :class "ctl-slider-val" :halign "end" :hexpand true :text "${vol}%"))
+      (scale :class "ctl-slider" :min 0 :max 101 :value vol
+             :onchange "wpctl set-volume @DEFAULT_AUDIO_SINK@ {}%"))
+    (box :class "ctl-slider-block" :orientation "v" :space-evenly false :spacing 6
+      (box :space-evenly false
+        (label :class "ctl-slider-lbl" :halign "start" :text "brightness")
+        (label :class "ctl-slider-val" :halign "end" :hexpand true :text "${bri}%"))
+      (scale :class "ctl-slider" :min 1 :max 101 :value bri
+             :onchange "brightnessctl set {}%"))
+    (label :class "popup-foot" :halign "start" :text "eth0 · ${upstr}")))
+
+(defwindow popup-control
+  :monitor 0
+  :geometry (geometry :x "28px" :y "83px" :width "352px" :anchor "top right")
+  :stacking "overlay" :exclusive false :namespace "eww-popup"
+  (popup-control-w))
+
+;; ══════════════════════════ NOTIFICATIONS ══════════════════════════
+
+(defwidget popup-notif-w []
+  (box :class "popup popin" :orientation "v" :space-evenly false
+    (box :class "ntf-head" :space-evenly false
+      (label :class "popup-title-inline" :halign "start" :text "noise")
+      (eventbox :onclick "scripts/notif_clear.sh" :cursor "pointer" :halign "end" :hexpand true
+        (label :class "ntf-clear" :text "clear all")))
+    (box :orientation "v" :space-evenly false
+      (for n in {notiflist}
+        (box :class "ntf-row" :space-evenly false :spacing 12
+          (box :class "glyph-sq" :width 26 :height 26 :valign "start"
+            (label :class "glyph-txt" :text {n.g}))
+          (box :orientation "v" :space-evenly false :spacing 2 :hexpand true
+            (box :space-evenly false
+              (label :class "ntf-title" :halign "start" :text {n.t})
+              (label :class "ntf-time" :halign "end" :hexpand true :text {n.time}))
+            (label :class "ntf-body" :halign "start" :wrap true :text {n.b})))))
+    (label :class "ntf-empty" :visible {arraylength(notiflist) == 0} :text "nothing. peace at last.")))
+
+(defwindow popup-notif
+  :monitor 0
+  :geometry (geometry :x "28px" :y "83px" :width "380px" :anchor "top right")
+  :stacking "overlay" :exclusive false :namespace "eww-popup"
+  (popup-notif-w))
+
+;; ══════════════════════════ MUSIC ══════════════════════════
+
+(defwidget popup-music-w []
+  (box :class "popup popin" :orientation "v" :space-evenly false
+    (box :class "mus-head" :space-evenly false :spacing 16
+      (box :class "mus-cover" :width 74 :height 74 :valign "center"
+        (label :class "mus-cover-txt" :text {musjson.glyph}))
+      (box :orientation "v" :space-evenly false :spacing 3 :hexpand true :valign "center"
+        (label :class "mus-title" :halign "start" :limit-width 26 :text {musjson.title})
+        (label :class "mus-artist" :halign "start" :text {musjson.artist})
+        (box :class "mus-ctl-row" :space-evenly false :spacing 8
+          (eventbox :onclick "playerctl previous" :cursor "pointer"
+            (box :class "mus-btn" :width 34 :height 26 (label :text "<<")))
+          (eventbox :onclick "playerctl play-pause" :cursor "pointer"
+            (box :class "mus-btn mus-btn-main" :width 44 :height 26
+              (label :text {musjson.status == "Playing" ? "||" : "|>"})))
+          (eventbox :onclick "playerctl next" :cursor "pointer"
+            (box :class "mus-btn" :width 34 :height 26 (label :text ">>"))))))
+    (box :class "mus-prog-block" :orientation "v" :space-evenly false :spacing 5
+      (scale :class "mus-prog" :min 0 :max 101 :value {musjson.pct} :active false)
+      (box :space-evenly false
+        (label :class "mus-time" :halign "start" :text {musjson.pos})
+        (label :class "mus-time" :halign "end" :hexpand true :text {musjson.len})))
+    (box :class "cava ${musjson.status == "Playing" ? "cava-on" : "cava-off"}"
+         :space-evenly false :spacing 2 :valign "end"
+      (box :class "cv c1")(box :class "cv c2")(box :class "cv c3")(box :class "cv c4")
+      (box :class "cv c5")(box :class "cv c6")(box :class "cv c7")(box :class "cv c8")
+      (box :class "cv c9")(box :class "cv c10")(box :class "cv c11")(box :class "cv c12")
+      (box :class "cv c13")(box :class "cv c14")(box :class "cv c15")(box :class "cv c16")
+      (box :class "cv c17")(box :class "cv c18")(box :class "cv c19")(box :class "cv c20")
+      (box :class "cv c21")(box :class "cv c22"))))
+
+(defwindow popup-music
+  :monitor 0
+  :geometry (geometry :x "360px" :y "83px" :width "372px" :anchor "top left")
+  :stacking "overlay" :exclusive false :namespace "eww-popup"
+  (popup-music-w))
+
+;; ══════════════════════════ SYSTEM MONITOR ══════════════════════════
+
+(defwidget popup-sysmon-w []
+  (box :class "popup popin" :orientation "v" :space-evenly false
+    (box :class "sys-head" :space-evenly false
+      (label :class "popup-title-inline" :halign "start" :text "vitals")
+      (label :class "sys-kernel" :halign "end" :hexpand true :text "shinigami ${kernelstr} · bore"))
+    (box :class "sys-block" :orientation "v" :space-evenly false :spacing 5
+      (box :space-evenly false
+        (label :class "sys-lbl" :halign "start" :text "cpu")
+        (label :class "sys-val" :halign "end" :hexpand true :text "${cpu}%"))
+      (box :class "sys-bigchart"
+        (image :path bigspark :image-width 382 :image-height 86)))
+    (box :class "sys-cores" :space-evenly false :spacing 5 :valign "end"
+      (for c in cores
+        (box :class "core-bar" :width 12 :valign "end"
+             :style "min-height:${c * 0.38 + 2}px;"))
+      (label :class "sys-cores-lbl" :valign "center" :text "${arraylength(cores)} threads"))
+    (box :class "sys-block" :orientation "v" :space-evenly false :spacing 5
+      (box :space-evenly false
+        (label :class "sys-lbl" :halign "start" :text "ram")
+        (label :class "sys-val" :halign "end" :hexpand true :text ramlong))
+      (scale :class "sys-rambar" :min 0 :max 101 :value mem :active false))
+    (box :class "sys-stats-row" :space-evenly false :spacing 20
+      (label :class "sys-lbl" :text "${temp}°c")
+      (label :class "sys-lbl" :text "pkgs ${pkgs}"))
+    (box :class "sys-procs" :orientation "v" :space-evenly false
+      (for p in procs
+        (box :class "proc-row" :space-evenly false :spacing 12
+          (label :class "proc-name" :halign "start" :text {p.n})
+          (box :class "proc-track" :hexpand true :valign "center"
+            (box :class "proc-fill" :halign "start" :style "min-width:${p.w * 2}px;"))
+          (label :class "proc-cpu" :halign "end" :text {p.c}))))))
+
+(defwindow popup-sysmon
+  :monitor 0
+  :geometry (geometry :x "28px" :y "83px" :width "424px" :anchor "top right")
+  :stacking "overlay" :exclusive false :namespace "eww-popup"
+  (popup-sysmon-w))
+
+;; ══════════════════════════ MODAL · LAUNCHER ══════════════════════════
+
+(defwidget modal-launcher-w []
+  (eventbox :onclick "scripts/popup.sh close-all"
+    (box :class "scrim" :hexpand true :vexpand true :orientation "v" :space-evenly false
+      (box :class "lch-box popin-modal" :orientation "v" :space-evenly false
+           :halign "center" :valign "start"
+        (box :class "lch-head" :space-evenly false :spacing 14
+          (label :class "lch-prompt" :text "❯")
+          (input :class "lch-input" :value query :hexpand true
+                 :onchange "scripts/launcher.sh '{}'"
+                 :onaccept "scripts/popup.sh close-all")
+          (label :class "key-chip" :text "esc"))
+        (box :class "lch-sweep-track"
+          (box :class "lch-sweep" :halign "start"))
+        (box :orientation "v" :space-evenly false
+          (for r in lch_results
+            (eventbox :cursor "pointer"
+              :onclick {r.exec == "POWER" ? "scripts/popup.sh power" :
+                        r.exec == "" ? "true" :
+                        "sh -c 'scripts/popup.sh close-all; swaymsg exec \"${r.exec}\"'"}
+              (box :class "lch-row" :space-evenly false :spacing 14
+                (box :class "glyph-sq" :width 32 :height 32
+                  (label :class "glyph-txt" :text {r.g}))
+                (label :class "lch-name" :halign "start" :text {r.n})
+                (label :class "lch-desc" :halign "end" :hexpand true :text {r.d})))))
+        (box :class "lch-foot" :space-evenly false :spacing 16
+          (label :text "↵ open")
+          (label :halign "end" :hexpand true :text "try typing \"kira\""))))))
+
+(defwindow modal-launcher
+  :monitor 0
+  :geometry (geometry :x "0" :y "0" :width "100%" :height "100%" :anchor "top left")
+  :stacking "overlay" :exclusive false :focusable true :namespace "eww-modal"
+  (modal-launcher-w))
+
+;; ══════════════════════════ MODAL · WORKSPACE OVERVIEW ══════════════════════════
+
+(defwidget ovw-card [w]
+  (eventbox :onclick "sh -c 'swaymsg workspace number ${w.num}; scripts/popup.sh close-all'" :cursor "pointer"
+    (box :class "ovw-card ${w.focused ? "ovw-active" : ""}" :orientation "v" :space-evenly false
+      (image :path {w.img} :image-width 276 :image-height 128)
+      (box :class "ovw-caption" :space-evenly false :spacing 9 :valign "end"
+        (label :class "ovw-digit" :text "0${w.num}")
+        (label :class "ovw-name" :text {w.num == 1 ? "the usual" : w.num == 2 ? "reading" : w.num == 3 ? "split brain" : w.num == 4 ? "empty. suspicious." : "side quest"})))))
+
+(defwidget modal-overview-w []
+  (eventbox :onclick "scripts/popup.sh close-all"
+    (box :class "scrim" :hexpand true :vexpand true
+      (box :orientation "v" :space-evenly false :spacing 34
+           :valign "center" :halign "center" :hexpand true :vexpand true
+        (label :class "modal-headline" :text "where do you want to be?")
+        (box :class "popin-modal" :space-evenly false :spacing 22 :halign "center"
+          (for w in workspaces (ovw-card :w w)))
+        (label :class "modal-hint" :text "1–5 jumps · esc stays")))))
+
+(defwindow modal-overview
+  :monitor 0
+  :geometry (geometry :x "0" :y "0" :width "100%" :height "100%" :anchor "top left")
+  :stacking "overlay" :exclusive false :namespace "eww-modal"
+  (modal-overview-w))
+
+;; ══════════════════════════ MODAL · POWER ══════════════════════════
+
+(defwidget pwr-card [glyph name sub cmd]
+  (eventbox :onclick cmd :cursor "pointer"
+    (box :class "pwr-card" :orientation "v" :space-evenly false :spacing 12
+         :width 150 :height 150 :valign "center"
+      (box :class "glyph-sq pwr-glyph" :width 52 :height 52 :halign "center"
+        (label :class "glyph-txt pwr-glyph-txt" :text glyph))
+      (label :class "pwr-name" :text name)
+      (label :class "pwr-sub" :text sub))))
+
+(defwidget modal-power-w []
+  (eventbox :onclick "scripts/popup.sh close-all"
+    (box :class "scrim scrim-dark" :hexpand true :vexpand true
+      (box :orientation "v" :space-evenly false :spacing 36
+           :valign "center" :halign "center" :hexpand true :vexpand true
+        (label :class "modal-headline" :text "leaving so soon?")
+        (box :class "popin-modal" :space-evenly false :spacing 20 :halign "center"
+          (pwr-card :glyph "lk" :name "lock"     :sub "swaylock"      :cmd "sh -c 'scripts/popup.sh close-all; swaylock --color 0a0a0f --daemonize'")
+          (pwr-card :glyph "zz" :name "suspend"  :sub "echo mem"      :cmd "sh -c 'scripts/popup.sh close-all; echo mem > /sys/power/state'")
+          (pwr-card :glyph "rb" :name "reboot"   :sub "runit stage 3" :cmd "reboot")
+          (pwr-card :glyph "off" :name "shutdown" :sub "poweroff"     :cmd "poweroff"))
+        (label :class "modal-hint" :text "click · esc stay")))))
+
+(defwindow modal-power
+  :monitor 0
+  :geometry (geometry :x "0" :y "0" :width "100%" :height "100%" :anchor "top left")
+  :stacking "overlay" :exclusive false :namespace "eww-modal"
+  (modal-power-w))
+
+;; ══════════════════════════ MODAL · SHORTCUTS ══════════════════════════
+
+(defwidget key-row [k d]
+  (box :class "keys-row" :space-evenly false :spacing 12
+    (box :class "key-chip-box" :width 60 (label :class "key-chip-txt" :text k))
+    (label :class "keys-desc" :halign "start" :text d)))
+
+(defwidget modal-keys-w []
+  (eventbox :onclick "scripts/popup.sh close-all"
+    (box :class "scrim scrim-dark" :hexpand true :vexpand true
+      (box :class "keys-box popin-modal" :orientation "v" :space-evenly false
+           :valign "center" :halign "center"
+        (label :class "keys-title" :halign "start" :text "shortcuts")
+        (box :space-evenly true :spacing 26
+          (box :orientation "v" :space-evenly false :spacing 3
+            (key-row :k "s"   :d "launcher")
+            (key-row :k "w"   :d "workspace overview")
+            (key-row :k "c"   :d "control center")
+            (key-row :k "n"   :d "notifications")
+            (key-row :k "m"   :d "music"))
+          (box :orientation "v" :space-evenly false :spacing 3
+            (key-row :k "d"   :d "calendar")
+            (key-row :k "i"   :d "system monitor")
+            (key-row :k "p"   :d "power menu")
+            (key-row :k "1-5" :d "jump to workspace")
+            (key-row :k "esc" :d "close whatever's open")))
+        (label :class "popup-foot" :halign "start" :text "all of these ride on super.")))))
+
+(defwindow modal-keys
+  :monitor 0
+  :geometry (geometry :x "0" :y "0" :width "100%" :height "100%" :anchor "top left")
+  :stacking "overlay" :exclusive false :namespace "eww-modal"
+  (modal-keys-w))
+
+;; ══════════════════════════ PERSONALITY LAYER ══════════════════════════
+
+(deflisten voicetext :initial "" "scripts/voice.sh")
+(defvar ghostnum "1")
+(defvar toasttxt "")
+
+;; voice line: persistent bottom-left typewriter (model: kira ▸ <typed> + cursor)
+(defwindow voice
+  :monitor 0
+  :geometry (geometry :x "30px" :y "26px" :width "560px" :height "22px" :anchor "bottom left")
+  :stacking "fg" :exclusive false :namespace "eww-ghost"
+  (eventbox :onclick "touch /tmp/kira-voice-skip" :cursor "pointer" :halign "start"
+    (box :space-evenly false :spacing 6 :halign "start" :valign "center"
+      (label :class "v-prefix" :text "kira")
+      (label :class "v-arrow" :text "▸")
+      (label :class "v-text" :text voicetext)
+      (box :class "v-cursor" :valign "center"))))
+
+;; keys hint: persistent bottom-right thin overlay
+(defwindow keyshint
+  :monitor 0
+  :geometry (geometry :x "30px" :y "26px" :width "220px" :height "22px" :anchor "bottom right")
+  :stacking "fg" :exclusive false :namespace "eww-ghost"
+  (eventbox :onclick "scripts/popup.sh keys" :cursor "pointer" :halign "end"
+    (label :class "keyshint" :text "super ? ▸ shortcuts")))
+
+;; ghost workspace digit: 360px, snaps in, eases out (model spec)
+(defwindow ghost-ws
+  :monitor 0
+  :geometry (geometry :x "0" :y "0" :width "480px" :height "420px" :anchor "center")
+  :stacking "overlay" :exclusive false :namespace "eww-ghost"
+  (box :halign "center" :valign "center"
+    (label :class "ghost-digit" :text ghostnum)))
+
+;; volume / brightness toast
+(defwindow toast
+  :monitor 0
+  :geometry (geometry :x "0" :y "72px" :width "200px" :anchor "bottom center")
+  :stacking "overlay" :exclusive false :namespace "eww-ghost"
+  (box :class "toast popin" :halign "center"
+    (label :class "toast-txt" :text toasttxt)))

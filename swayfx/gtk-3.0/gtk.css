@@ -1,281 +1,48 @@
-window, .background {
-    background-color: #0a0a0f;
-    color: #e8d8ff;
-}
+/* ╔══════════════════════════════════════════════════════════╗
+   ║  Kira Linux · GTK3 accent overrides · 1A "Trinity"       ║
+   ║  recolours Adwaita-dark toward the Kira palette          ║
+   ╚══════════════════════════════════════════════════════════╝ */
 
-headerbar, .titlebar {
-    background-color: #12101a;
-    color: #e8d8ff;
-    border-bottom: 1px solid #2a2240;
-    box-shadow: none;
-}
+@define-color base       #0a0a0f;
+@define-color surface0   #12101a;
+@define-color surface1   #1c1828;
+@define-color surface2   #2a2240;
+@define-color overlay    #3d3060;
+@define-color muted      #6b4f9e;
+@define-color text       #e8d8ff;
+@define-color subtext    #b09acc;
+@define-color primary    #aa00ff;
+@define-color secondary  #ff00aa;
 
-headerbar button, .titlebar button {
-    background: transparent;
-    color: #b09acc;
-    border: none;
-    border-radius: 6px;
-    padding: 4px 8px;
-}
+@define-color theme_bg_color        @base;
+@define-color theme_base_color      @surface0;
+@define-color theme_fg_color        @text;
+@define-color theme_text_color      @text;
+@define-color theme_selected_bg_color @primary;
+@define-color theme_selected_fg_color @text;
 
-headerbar button:hover, .titlebar button:hover {
-    background-color: #1c1828;
-    color: #e8d8ff;
-}
+@define-color accent_color     @primary;
+@define-color accent_bg_color  @primary;
+@define-color accent_fg_color  #0a0a0f;
 
-headerbar button:active, .titlebar button:active {
-    background-color: #3d3060;
-    color: #aa00ff;
-}
+@define-color window_bg_color  @base;
+@define-color view_bg_color    @surface0;
+@define-color headerbar_bg_color @surface1;
+@define-color card_bg_color    @surface1;
 
-headerbar button.titlebutton.close,
-.titlebar button.titlebutton.close {
-    color: #ff00aa;
-}
+/* subtle: selection + focus ring in Kira purple */
+*:selected,
+*:focus { outline-color: @primary; }
 
-headerbar button.titlebutton.close:hover,
-.titlebar button.titlebutton.close:hover {
-    background-color: #ff00aa;
-    color: #0a0a0f;
-}
-
-.sidebar, placessidebar {
-    background-color: #12101a;
-    color: #e8d8ff;
-    border-right: 1px solid #2a2240;
-}
-
-.sidebar row, placessidebar row {
-    border-radius: 6px;
-    padding: 2px 4px;
-}
-
-.sidebar row:hover, placessidebar row:hover {
-    background-color: #1c1828;
-}
-
-.sidebar row:selected, placessidebar row:selected {
-    background-color: #3d3060;
-    color: #aa00ff;
-}
-
-button {
-    background-color: #1c1828;
-    color: #e8d8ff;
-    border: 1px solid #2a2240;
-    border-radius: 6px;
-    padding: 6px 12px;
-    box-shadow: none;
-}
-
-button:hover {
-    background-color: #3d3060;
-    color: #e8d8ff;
-    border-color: #7700cc;
-}
-
-button:active, button:checked {
-    background-color: #aa00ff;
-    color: #0a0a0f;
-    border-color: #aa00ff;
-}
+selection { background-color: alpha(@primary, 0.35); color: @text; }
 
 button.suggested-action {
-    background-color: #aa00ff;
-    color: #0a0a0f;
-    border-color: #aa00ff;
+  background-image: none;
+  background-color: @primary;
+  color: #0a0a0f;
 }
 
-button.suggested-action:hover {
-    background-color: #7700cc;
-}
+progressbar progress,
+scale highlight { background-color: @primary; }
 
-button.destructive-action {
-    background-color: #ff00aa;
-    color: #0a0a0f;
-    border-color: #ff00aa;
-}
-
-entry {
-    background-color: #1c1828;
-    color: #e8d8ff;
-    border: 1px solid #2a2240;
-    border-radius: 6px;
-    padding: 6px 10px;
-    box-shadow: none;
-    caret-color: #aa00ff;
-}
-
-entry:focus {
-    border-color: #aa00ff;
-    box-shadow: 0 0 0 2px alpha(#aa00ff, 0.25);
-}
-
-entry selection {
-    background-color: #aa00ff;
-    color: #0a0a0f;
-}
-
-list, listbox {
-    background-color: #0a0a0f;
-    color: #e8d8ff;
-}
-
-row {
-    padding: 6px 8px;
-}
-
-row:hover {
-    background-color: #1c1828;
-}
-
-row:selected {
-    background-color: #3d3060;
-    color: #aa00ff;
-}
-
-menu, .menu, .context-menu {
-    background-color: #1c1828;
-    color: #e8d8ff;
-    border: 1px solid #2a2240;
-    border-radius: 8px;
-    padding: 4px;
-    box-shadow: 0 4px 16px alpha(#0a0a0f, 0.8);
-}
-
-menuitem {
-    border-radius: 6px;
-    padding: 6px 12px;
-}
-
-menuitem:hover {
-    background-color: #3d3060;
-    color: #aa00ff;
-}
-
-menuitem:disabled {
-    color: #6b4f9e;
-}
-
-separator.horizontal {
-    background-color: #2a2240;
-    min-height: 1px;
-    margin: 4px 8px;
-}
-
-popover {
-    background-color: #1c1828;
-    border: 1px solid #2a2240;
-    border-radius: 8px;
-    box-shadow: 0 4px 16px alpha(#0a0a0f, 0.8);
-}
-
-notebook > header {
-    background-color: #12101a;
-    border-bottom: 1px solid #2a2240;
-}
-
-notebook > header tab {
-    background-color: transparent;
-    color: #6b4f9e;
-    border-radius: 6px 6px 0 0;
-    padding: 6px 16px;
-}
-
-notebook > header tab:hover {
-    color: #e8d8ff;
-    background-color: #1c1828;
-}
-
-notebook > header tab:checked {
-    background-color: #1c1828;
-    color: #aa00ff;
-    border-bottom: 2px solid #aa00ff;
-}
-
-scrollbar {
-    background-color: transparent;
-}
-
-scrollbar slider {
-    background-color: #2a2240;
-    border-radius: 4px;
-    min-width: 4px;
-    min-height: 4px;
-}
-
-scrollbar slider:hover {
-    background-color: #6b4f9e;
-}
-
-scrollbar slider:active {
-    background-color: #7700cc;
-}
-
-progressbar trough {
-    background-color: #2a2240;
-    border-radius: 4px;
-    min-height: 6px;
-}
-
-progressbar progress {
-    background-color: #aa00ff;
-    border-radius: 4px;
-}
-
-checkbutton check, radiobutton radio {
-    background-color: #1c1828;
-    border: 1px solid #2a2240;
-    border-radius: 4px;
-}
-
-checkbutton check:checked, radiobutton radio:checked {
-    background-color: #aa00ff;
-    border-color: #aa00ff;
-    color: #0a0a0f;
-}
-
-checkbutton check:hover, radiobutton radio:hover {
-    border-color: #7700cc;
-}
-
-tooltip {
-    background-color: #1c1828;
-    color: #e8d8ff;
-    border: 1px solid #2a2240;
-    border-radius: 6px;
-    padding: 4px 8px;
-}
-
-switch {
-    background-color: #2a2240;
-    border-radius: 14px;
-    min-width: 40px;
-    min-height: 20px;
-}
-
-switch:checked {
-    background-color: #aa00ff
-}
-
-switch slider {
-    background-color: #e8d8ff;
-    border-radius: 50%;
-    min-width: 16px;
-    min-height: 16px;
-}
-
-.path-bar button {
-    background-color: #1c1828;
-    border-radius: 6px;
-    color: #b09acc;
-}
-
-.path-bar button:hover {
-    color: #e8d8ff;
-    background-color: #3d3060;
-}
-
-.path-bar button.highlighted {
-    color: #aa00ff;
-}
+entry:focus-within { border-color: @primary; }

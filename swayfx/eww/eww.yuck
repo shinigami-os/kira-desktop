@@ -1,182 +1,149 @@
-;; ============================================================
-;; Kira Linux - eww bar (based on elkowar's eww-bar example)
-;; ============================================================
+;; ╔══════════════════════════════════════════════════════════════════╗
+;; ║  Kira Linux · eww · "Kira Shell"                                 ║
+;; ║  5 floating islands · driven by shell scripts + sway IPC         ║
+;; ╚══════════════════════════════════════════════════════════════════╝
 
-;; -- Polls ---------------------------------------------------
+;; ─────────────────────────── data sources ───────────────────────────
+(deflisten workspaces :initial "[]" "scripts/workspaces.sh")
+(deflisten ws_focus   :initial '{"num":1,"name":"the usual"}' "scripts/ws_focus.sh")
+(deflisten mediajson  :initial '{"status":"Stopped","artist":"","title":""}' "scripts/media.sh")
 
-(defpoll clock_time :interval "5s"
-  "date '+%H:%M'")
+(defpoll cpu        :interval "2s"  :initial "0"            "scripts/cpu.sh")
+(defpoll mem        :interval "3s"  :initial "0.0"          "scripts/mem.sh")
+(defpoll temp       :interval "3s"  :initial "0"            "scripts/temp.sh")
+(defpoll vol        :interval "1s"  :initial "0"            "scripts/vol.sh")
+(defpoll eth        :interval "5s"  :initial "0"            "scripts/net.sh")
+(defpoll notifcount :interval "3s"  :initial "0"            "scripts/notifcount.sh")
 
-(defpoll clock_date :interval "60s"
-  "date '+%a %d %b'")
+(defpoll time_main  :interval "10s" :initial "--:--"        "date +%H:%M")
+(defpoll time_sec   :interval "1s"  :initial "00"           "date +%S")
+(defpoll date_str   :interval "60s" :initial ""             "date '+%a %d %b' | tr '[:upper:]' '[:lower:]'")
 
-(defpoll cpu_temp :interval "5s"
-  "cat /sys/class/thermal/thermal_zone0/temp 2>/dev/null | awk '{printf \"%.0f\", $1/1000}' || echo '?'")
+;; ══════════════════════════ WORKSPACE MINI ══════════════════════════
+;; workspaces.sh emits: [{num, focused, wins:[{l,t,w,h,f}]}]
 
-(defpoll net_label :interval "5s"
-  "ip link show | awk -F': ' '/^[0-9]+: /{iface=$2} /UP/ && iface != \"lo\" {print iface; exit}' || echo 'none'")
+(defwidget ws-mini [w]
+  (eventbox :onclick "swaymsg workspace number ${w.num}" :cursor "pointer"
+    (box :class "ws-mini ${w.focused ? "ws-mini-active" : ""}" :valign "center" :halign "center"
+      (image :path {w.img} :image-width 34 :image-height 22))))
 
-(defpoll net_ssid :interval "10s"
-  "iw dev 2>/dev/null | awk '/Interface/{i=$2} /ssid/{print $2; exit}' || echo ''")
+;; ══════════════════════════ ISLANDS ══════════════════════════
 
-(defpoll vol_val :interval "1s"
-  "pactl get-sink-volume @DEFAULT_SINK@ 2>/dev/null | awk '{gsub(/%/,\"\"); print $5}' || echo '0'")
+(defwidget island-workspaces []
+  (box :class "island" :space-evenly false :spacing 9 :valign "center" :halign "start"
+    (box :space-evenly false :spacing 9
+      (for w in workspaces
+        (ws-mini :w w)))
+    (eventbox :onclick "scripts/popup.sh overview" :cursor "pointer"
+      (box :orientation "v" :space-evenly false :spacing 1 :valign "center"
+        (label :class "ws-digit" :halign "start" :text "0${ws_focus.num}")
+        (label :class "ws-name" :halign "start" :text {ws_focus.name})))))
 
-(defpoll vol_muted :interval "1s"
-  "pactl get-sink-mute @DEFAULT_SINK@ 2>/dev/null | awk '{print $2}' || echo 'no'")
+(defwidget island-media []
+  (eventbox :onclick "scripts/popup.sh music" :cursor "pointer" :halign "start" :hexpand false
+    (box :class "island" :space-evenly false :spacing 12 :valign "center" :halign "start"
+      (box :class "eq ${mediajson.status == "Playing" ? "eq-on" : "eq-off"}"
+           :space-evenly false :spacing 2 :valign "center"
+        (box :class "eq-bar b1")
+        (box :class "eq-bar b2")
+        (box :class "eq-bar b3"))
+      (label :class "media-text"
+             :text {mediajson.title == "" ? "nothing playing" : "${mediajson.artist}  —  ${mediajson.title}"}
+             :halign "start"))))
 
-(defpoll workspaces :interval "0.3s"
-  `swaymsg -t get_workspaces | python3 -c "
-import json,sys
-ws=json.load(sys.stdin)
-icons=['','','','','','','','','','']
-result=[]
-for w in sorted(ws,key=lambda x:x['num']):
-    result.append({
-        'num': w['num'],
-        'icon': icons[min(w['num']-1,len(icons)-1)],
-        'focused': w['focused'],
-        'urgent': w['urgent']
-    })
-print(json.dumps(result))
-"`)
+(defwidget island-clock []
+  (eventbox :onclick "scripts/popup.sh calendar" :onrightclick "scripts/voice.sh --say 'time is a construct. anyway.'" :cursor "pointer" :halign "center" :hexpand false
+    (box :class "island" :space-evenly false :spacing 12 :valign "center" :halign "center"
+      (label :class "clock-main" :text time_main)
+      (box :orientation "v" :space-evenly false :spacing 1 :valign "center"
+        (label :class "clock-sec" :halign "start" :text time_sec)
+        (label :class "clock-date" :halign "start" :text date_str)))))
 
-(defpoll window_title :interval "0.5s"
-  `swaymsg -t get_tree | python3 -c "
-import json,sys
-tree=json.load(sys.stdin)
-def find_focused(n):
-    if n.get('focused'): return n.get('name','')
-    for c in n.get('nodes',[])+n.get('floating_nodes',[]):
-        r=find_focused(c)
-        if r is not None: return r
-    return None
-t=find_focused(tree) or ''
-print(t[:60])
-" 2>/dev/null`)
 
-(deflisten music :initial ""
-  "playerctl --follow metadata --format '{{ artist }} - {{ title }}' 2>/dev/null || true")
+;; ── battery: 5-cell frame + nub (hidden when no battery) ──
+(defwidget bat-widget []
+  (box :space-evenly false :spacing 6 :valign "center"
+       :visible {batjson.present}
+       :tooltip {batjson.charging ? "charging — ${batjson.pct}%" : "on battery — ${batjson.pct}%"}
+    (box :space-evenly false :spacing 0 :valign "center"
+      (box :class "bat-frame ${batjson.charging ? "bat-chg" : ""} ${batjson.low ? "bat-low" : ""}"
+           :space-evenly false :spacing 2 :valign "center"
+        (for c in {batjson.cells}
+          (box :class "bat-cell ${c == 1 ? "cell-on" : "cell-off"}" :valign "center")))
+      (box :class "bat-nub" :valign "center"))
+    (label :class "vital-val" :text "${batjson.pct}%")))
 
-;; -- Metric widget (elkowar style) ---------------------------
+(defwidget island-vitals []
+  (box :class "island" :space-evenly false :spacing 16 :valign "center" :halign "end" :hexpand false
+    (graph :class "spark" :valign "center"
+           :hexpand false :vexpand false
+           :width 46 :height 20
+           :value cpu :time-range "50s"
+           :min 0 :max 100 :dynamic true
+           :thickness 1.4 :line-style "round")
+    (eventbox :onclick "scripts/popup.sh sysmon" :cursor "pointer" :hexpand false
+      (box :space-evenly false :spacing 16 :valign "center"
+        (box :space-evenly false :spacing 8 :valign "center"
+          (label :class "vital-txt" :text "cpu")
+          (label :class "vital-val" :text "${cpu}%"))
+        (box :class "vital-div")
+        (label :class "vital-txt" :text "ram")
+        (label :class "vital-val" :text "${mem}%")
+        (box :class "vital-div")
+        (label :class "vital-val" :text "${temp}°c")))
+    (box :class "vital-div")
+    (eventbox :onclick "scripts/popup.sh control" :cursor "pointer" :hexpand false
+      (box :space-evenly false :spacing 14 :valign "center"
+        (box :space-evenly false :spacing 5 :valign "center"
+          (label :class "vital-txt" :text "vol")
+          (label :class "vital-val" :text "${vol}%"))
+        (bat-widget)
+        (box :space-evenly false :spacing 5 :valign "center"
+          (label :class "vital-txt" :text "eth")
+          (box :valign "center" :vexpand false :hexpand false
+            (box :class "eth-dot ${eth == "1" ? "eth-on" : "eth-off"}" :vexpand false :hexpand false)))))))
 
-(defwidget metric [icon value ?onchange ?max]
-  (box :class "metric"
-       :orientation "h"
-       :space-evenly false
-       :spacing 6
-    (label :class "metric-icon" :text icon)
-    (scale :class "metric-bar"
-           :min 0
-           :max {max ?: 101}
-           :active {onchange != "" && onchange != "false"}
-           :value value
-           :onchange {onchange ?: ""})))
+(defwidget island-notif []
+  (eventbox :onclick "scripts/popup.sh notif" :cursor "pointer"
+    (box :class "island island-notif ${notifcount != "0" ? "notif-pulse" : ""}"
+         :valign "center" :halign "center"
+      (label :class "notif-count ${notifcount != "0" ? "notif-has" : "notif-empty"}"
+             :text notifcount))))
 
-;; -- Workspaces ----------------------------------------------
+;; ══════════════════════════ WINDOWS ══════════════════════════
+;; One window per island (maquette positions: 28px, 470px, center,
+;; right 110px, right 28px; all at y 26). Separate windows let SwayFX
+;; layer_effects apply blur + shadow per island instead of full-width.
+;; All non-exclusive; space is reserved via "gaps top" in sway config.
 
-(defwidget workspace-btn [num icon focused urgent]
-  (button
-    :class {focused ? "ws-btn focused" : urgent ? "ws-btn urgent" : "ws-btn"}
-    :onclick "swaymsg workspace number ${num}"
-    icon))
-
-(defwidget workspaces-widget []
-  (box :class "workspaces" :spacing 4 :space-evenly false
-    (for ws in workspaces
-      (workspace-btn
-        :num     {ws.num}
-        :icon    {ws.icon}
-        :focused {ws.focused}
-        :urgent  {ws.urgent}))))
-
-;; -- Clock ---------------------------------------------------
-
-(defwidget clock-widget []
-  (box :class "clock" :spacing 4 :space-evenly false
-    (label :class "clock-time" :text clock_time)
-    (label :class "clock-date" :text clock_date)))
-
-;; -- Music ---------------------------------------------------
-
-(defwidget music-widget []
-  (box :class "music"
-       :space-evenly false
-       :spacing 6
-    {music != "" ? "󰎇 ${music}" : ""}))
-
-;; -- Network -------------------------------------------------
-
-(defwidget network-widget []
-  (box :class "net" :space-evenly false :spacing 4
-    (label :class "net-icon"
-           :text {net_label == "none" ? "󰤭" :
-                  net_ssid  != ""     ? "󰤨" : "󰈀"})
-    (label :class "net-label"
-           :text {net_ssid != "" ? net_ssid : net_label})))
-
-;; -- Battery -------------------------------------------------
-
-(defwidget battery-widget []
-  (box :class "battery"
-       :visible {EWW_BATTERY != ""}
-       :space-evenly false
-       :spacing 4
-    (label :class "bat-icon"
-           :text {EWW_BATTERY["BAT0"].status == "Charging" ? "󰂄" :
-                  EWW_BATTERY["BAT0"].capacity > 80 ? "󰁹" :
-                  EWW_BATTERY["BAT0"].capacity > 60 ? "󰂀" :
-                  EWW_BATTERY["BAT0"].capacity > 40 ? "󰁾" :
-                  EWW_BATTERY["BAT0"].capacity > 20 ? "󰁼" : "󰁺"})
-    (label :text "${EWW_BATTERY["BAT0"].capacity}%")))
-
-;; -- Left / Center / Right -----------------------------------
-
-(defwidget bar-left []
-  (box :class "bar-left" :space-evenly false :spacing 12
-    (label :class "window-title" :limit-width 50 :text window_title)
-    (music-widget)))
-
-(defwidget bar-center []
-  (box :class "bar-center" :space-evenly false :spacing 8
-    (metric :icon "" :value {round(EWW_CPU.avg, 0)} :onchange "false")
-    (label :class "metric-label" :text "${round(EWW_CPU.avg, 0)}%")
-    (metric :icon "" :value {round(EWW_RAM.used_mem_perc, 0)} :onchange "false")
-    (label :class "metric-label" :text "${round(EWW_RAM.used_mem_perc, 0)}%")
-    (label :class "temp-label" :text "󰔏 ${cpu_temp}°C")
-    (workspaces-widget)
-    (clock-widget)))
-
-(defwidget bar-right []
-  (box :class "bar-right" :space-evenly false :spacing 8
-    (metric :icon {vol_muted == "yes" ? "󰝟" : "󰕾"}
-            :value vol_val
-            :onchange "pactl set-sink-volume @DEFAULT_SINK@ {}%")
-    (network-widget)
-    (battery-widget)))
-
-;; -- Main bar widget -----------------------------------------
-
-(defwidget bar-widget [monitor]
-  (box :class "bar"
-       :orientation "h"
-       :space-evenly false
-    (box :hexpand true :halign "start" :space-evenly false
-      (bar-left))
-    (box :hexpand true :halign "center" :space-evenly false
-      (bar-center))
-    (box :hexpand true :halign "end" :space-evenly false
-      (bar-right))))
-
-;; -- Window --------------------------------------------------
-
-(defwindow bar
+(defwindow bar-ws
   :monitor 0
-  :geometry (geometry
-    :x "0px" :y "0px"
-    :width "100%" :height "36px"
-    :anchor "top center")
-  :stacking "fg"
-  :exclusive true
-  :focusable false
-  (bar-widget :monitor 0))
+  :geometry (geometry :x "28px" :y "13px" :width "360px" :height "56px" :anchor "top left")
+  :stacking "fg" :exclusive false :namespace "eww-bar"
+  (island-workspaces))
+
+(defwindow bar-media
+  :monitor 0
+  :geometry (geometry :x "360px" :y "13px" :width "400px" :height "56px" :anchor "top left")
+  :stacking "fg" :exclusive false :namespace "eww-bar"
+  (island-media))
+
+(defwindow bar-clock
+  :monitor 0
+  :geometry (geometry :x "0" :y "13px" :width "192px" :height "56px" :anchor "top center")
+  :stacking "fg" :exclusive false :namespace "eww-bar"
+  (island-clock))
+
+(defwindow bar-vitals
+  :monitor 0
+  :geometry (geometry :x "110px" :y "13px" :width "512px" :height "56px" :anchor "top right")
+  :stacking "fg" :exclusive false :namespace "eww-bar"
+  (island-vitals))
+
+(defwindow bar-notif
+  :monitor 0
+  :geometry (geometry :x "28px" :y "13px" :width "56px" :height "56px" :anchor "top right")
+  :stacking "fg" :exclusive false :namespace "eww-bar"
+  (island-notif))
+
+(include "popups.yuck")

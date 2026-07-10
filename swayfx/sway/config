@@ -1,20 +1,15 @@
-# =============================================================================
-# Kira Linux - SwayFX Configuration
-# =============================================================================
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  Kira Linux · SwayFX config · "Trinity"                          ║
+# ╚══════════════════════════════════════════════════════════════════╝
 
+### ─── modifier ───
 set $mod Mod4
 set $term foot
-set $launcher fuzzel
-set $files pcmanfm-qt
-set $settings kira-settings
-set $locker swaylock-effects --color 0a0a0f --effect-blur 7x5 --clock
+set $menu fuzzel
+set $explorer pcmanfm-qt
+set $locker swaylock --color 0a0a0f --daemonize
 
-font pango:Raleway 11
-
-# Output
-output * bg /usr/share/kira/wallpapers/default.png fill
-
-# Input
+### ─── input ───
 input "type:touchpad" {
     tap enabled
     natural_scroll disabled
@@ -28,108 +23,155 @@ input "type:keyboard" {
     xkb_variant azerty
 }
 
-# Appearance
-gaps inner 4
-gaps outer 8
+### ─── output / wallpaper ───
+output * bg /usr/share/kira/wallpapers/default.png fill
 
-default_border pixel 2
-default_floating_border pixel 2
+### ─── fonts ───
+font pango:JetBrains Mono 10
 
-corner_radius 8
-
-shadows enable
-shadow_blur_radius 20
-shadow_color #0a0a0fCC
+### ═══════════════════ SwayFX eye-candy ═══════════════════
+corner_radius 11
+xwayland disable
+focus_follows_mouse yes
 
 blur enable
+blur_xray disable
 blur_passes 3
-blur_radius 5
+blur_radius 6
 
-xwayland disable
+shadows enable
+shadows_on_csd enable
+shadow_blur_radius 26
+shadow_color #000000cc
 
-focus_follows_mouse no
+default_dim_inactive 0.12
+dim_inactive_colors.unfocused #07060bff
+dim_inactive_colors.urgent    #ff00aaff
 
-# Window colors
-client.focused          #aa00ff #1c1828 #e8d8ff #aa00ff #aa00ff
-client.focused_inactive #2a2240 #12101a #b09acc #2a2240 #2a2240
-client.unfocused        #2a2240 #12101a #6b4f9e #2a2240 #2a2240
-client.urgent           #ff00aa #1c1828 #e8d8ff #ff00aa #ff00aa
+titlebar_padding 1
+title_align center
 
-# Keybindings
-bindsym ctrl+alt+t          exec $term
-bindsym $mod+d              exec $launcher
-bindsym $mod+e              exec $files
-bindsym $mod+u              exec $settings
-bindsym $mod+r              exec kira-run
-bindsym $mod+c              exec menu-qalc-wayland
+### ─── gaps & borders ───
+gaps inner 8
+gaps outer 8
+gaps top 88
+smart_gaps off
+default_border pixel 2
+default_floating_border pixel 2
+smart_borders on
 
-bindsym $mod+q              kill
-bindsym $mod+f              fullscreen toggle
-bindsym $mod+h              splith
-bindsym $mod+v              splitv
-bindsym $mod+Shift+Space    floating toggle
+### ─── window colours ───     border    bg      text    indicator  child_border
+client.focused           #aa00ff   #0a0a0f  #e8d8ff  #aa00ff    #aa00ff
+client.focused_inactive  #3d3060   #0a0a0f  #6b4f9e  #3d3060    #3d3060
+client.unfocused         #1c1828   #0a0a0f  #6b4f9e  #1c1828    #1c1828
+client.urgent            #ff00aa   #0a0a0f  #e8d8ff  #ff00aa    #ff00aa
 
-bindsym $mod+i              focus up
-bindsym $mod+j              focus left
-bindsym $mod+o              focus down
-bindsym $mod+k              focus right
+### ─── per-app opacity (so blur shows) ───
+for_window [app_id="foot"]      opacity 0.90
+for_window [app_id="Alacritty"] opacity 0.90
+for_window [app_id="thunar"]    opacity 0.96
 
-bindsym $mod+Up             move up
-bindsym $mod+Down           move down
-bindsym $mod+Left           move left
-bindsym $mod+Right          move right
+### ─── floating rules ───
+for_window [app_id="pavucontrol"]          floating enable, resize set 520 640
+for_window [app_id="foot" title="scratch"] floating enable
+for_window [title="Picture-in-Picture"]    floating enable, sticky enable
+for_window [app_id="eww"]                   border none
 
-bindsym $mod+1              workspace number 1
-bindsym $mod+2              workspace number 2
-bindsym $mod+3              workspace number 3
-bindsym $mod+4              workspace number 4
-bindsym $mod+5              workspace number 5
-bindsym $mod+6              workspace number 6
-bindsym $mod+7              workspace number 7
-bindsym $mod+8              workspace number 8
-bindsym $mod+9              workspace number 9
-bindsym $mod+0              workspace number 10
+### ═══════════════════ keybindings ═══════════════════
+# launch
+bindsym ctrl+alt+t   exec $term
+bindsym $mod+s       exec $menu
+bindsym $mod+e       exec $explorer
+bindsym $mod+q       kill
+bindsym $mod+l       exec $locker
+bindsym $mod+Shift+q exec swaynag -t warning -m 'Exit sway?' -B 'Yes' 'swaymsg exit'
+bindsym $mod+Shift+r reload
 
-bindsym $mod+Shift+1        move container to workspace number 1
-bindsym $mod+Shift+2        move container to workspace number 2
-bindsym $mod+Shift+3        move container to workspace number 3
-bindsym $mod+Shift+4        move container to workspace number 4
-bindsym $mod+Shift+5        move container to workspace number 5
-bindsym $mod+Shift+6        move container to workspace number 6
-bindsym $mod+Shift+7        move container to workspace number 7
-bindsym $mod+Shift+8        move container to workspace number 8
-bindsym $mod+Shift+9        move container to workspace number 9
-bindsym $mod+Shift+0        move container to workspace number 10
+# screenshot
+bindsym Print        exec flameshot gui
+bindsym $mod+Shift+s exec flameshot gui
 
-bindsym $mod+Alt+Left       workspace prev
-bindsym $mod+Alt+Right      workspace next
-bindsym --whole-window $mod+button4 workspace prev
-bindsym --whole-window $mod+button5 workspace next
+# ─── Kira Shell · popups / modals (dispatcher) ───
+bindsym $mod+w        exec ~/.config/eww/scripts/popup.sh overview
+bindsym $mod+c        exec ~/.config/eww/scripts/popup.sh control
+bindsym $mod+n        exec ~/.config/eww/scripts/popup.sh notif
+bindsym $mod+m        exec ~/.config/eww/scripts/popup.sh music
+bindsym $mod+d        exec ~/.config/eww/scripts/popup.sh calendar
+bindsym $mod+i        exec ~/.config/eww/scripts/popup.sh sysmon
+bindsym $mod+p        exec ~/.config/eww/scripts/popup.sh power
+bindsym $mod+Escape   exec ~/.config/eww/scripts/popup.sh close-all
 
-bindsym $mod+Shift+Alt+Left     move container to workspace prev
-bindsym $mod+Shift+Alt+Right    move container to workspace next
+# focus (azerty zqsd-friendly but uhjk)
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+u focus up
+bindsym $mod+k focus right
 
-bindsym $mod+minus          scratchpad show
-bindsym $mod+Shift+minus    move scratchpad
+# move
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+u move up
+bindsym $mod+Shift+k move right
 
-bindsym Print               exec flameshot gui
-bindsym $mod+Shift+s        exec flameshot gui
+# workspaces
+bindsym $mod+1 workspace number 1
+bindsym $mod+2 workspace number 2
+bindsym $mod+3 workspace number 3
+bindsym $mod+4 workspace number 4
+bindsym $mod+5 workspace number 5
+bindsym $mod+6 workspace number 6
+bindsym $mod+Shift+1 move container to workspace number 1
+bindsym $mod+Shift+2 move container to workspace number 2
+bindsym $mod+Shift+3 move container to workspace number 3
+bindsym $mod+Shift+4 move container to workspace number 4
+bindsym $mod+Shift+5 move container to workspace number 5
+bindsym $mod+Shift+6 move container to workspace number 6
 
-bindsym $mod+l              exec $locker
-bindsym $mod+Shift+r        reload
+# layout
+bindsym $mod+f fullscreen
+bindsym $mod+Shift+space floating toggle
+bindsym $mod+space focus mode_toggle
+bindsym $mod+v splitv
+bindsym $mod+b splith
 
-# Floating rules
-for_window [app_id="floating_foot"]        floating enable, resize set 800 500
-for_window [app_id="kira-settings"]        floating enable
-for_window [app_id="pavucontrol"]          floating enable, resize set 700 450
-for_window [app_id="nm-connection-editor"] floating enable
+# media / volume / brightness keys
+bindsym XF86AudioRaiseVolume  exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+
+bindsym XF86AudioLowerVolume  exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
+bindsym XF86AudioMute         exec wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+bindsym XF86AudioPlay         exec playerctl play-pause
+bindsym XF86AudioNext         exec playerctl next
+bindsym XF86AudioPrev         exec playerctl previous
+bindsym XF86MonBrightnessUp   exec brightnessctl set +5%
+bindsym XF86MonBrightnessDown exec brightnessctl set 5%-
 
-# Autostart
-# exec_always kira-theme apply $(cat $HOME/.config/kira-desktop/current-theme 2>/dev/null || echo "kira-default")
-exec dbus-update-activation-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+### ─── resize mode ───
+mode "resize" {
+    bindsym h resize shrink width 40px
+    bindsym l resize grow width 40px
+    bindsym k resize shrink height 40px
+    bindsym j resize grow height 40px
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+r mode "resize"
+
+### ═══════════════════ layer_effects (per-island glass) ═══════════════════
+layer_effects "eww-bar"       blur enable; corner_radius 11
+layer_effects "eww-popup"     blur enable; corner_radius 13
+layer_effects "launcher"      blur enable; corner_radius 14
+layer_effects "notifications" blur enable; corner_radius 14
+
+### ═══════════════════ autostart ═══════════════════
+exec dbus-update-activation-environment --all
+exec /usr/bin/pipewire &
+exec /usr/bin/pipewire-pulse &
+exec /usr/bin/wireplumber &
 exec mako
-exec $HOME/.config/eww/launch-bars.sh
-exec flameshot
-exec pipewire &
-exec pipewire-pulse &
-exec wireplumber &
+exec_always ~/.config/eww/launch-bars.sh
+exec swayidle -w \
+        timeout 300 'swaylock --color 0a0a0f --daemonize' \
+        timeout 600 'swaymsg "output * dpms off"' \
+             resume 'swaymsg "output * dpms on"' \
+        before-sleep 'swaylock --color 0a0a0f --daemonize'
+
+include /etc/sway/config.d/*

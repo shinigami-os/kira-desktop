@@ -1,0 +1,682 @@
+// ╔══════════════════════════════════════════════════════════════════╗
+// ║  Kira Shell · eww styles · tokens extracted from design handoff  ║
+// ╚══════════════════════════════════════════════════════════════════╝
+
+// ── tokens ──
+$accent:       #aa00ff;
+$accent-text:  #d9a6ff;
+$base:         #060509;
+$panel:        rgba(9, 7, 13, 0.86);
+$text-pri:     #ece6f7;
+$text-sec:     #c9bedd;
+$text-mut:     #9d92b2;
+$text-dim:     #8d81a3;
+$text-faint:   #5d5273;
+$hairline:     rgba(232, 216, 255, 0.10);
+$hairline-lo:  rgba(232, 216, 255, 0.06);
+$knob:         #6a5f80;
+
+$mono: "JetBrains Mono", "DejaVu Sans Mono", monospace;
+$sans: "Raleway", sans-serif;
+
+// ── reset ──
+// NOTE: do NOT use `* { all: unset }` in GTK CSS. It strips inherited text
+// rendering from labels and leaves them invisible unless every label has a
+// full explicit rule. Reset conservatively instead.
+* {
+  margin: 0;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  text-shadow: none;
+  outline: none;
+}
+
+label {
+  color: $text-sec;
+  font-size: 11px;
+  font-family: $mono;
+}
+
+// ── window transparency (ONLY the top-level widget) ──
+// eww's top-level GTK window carries the .background class and paints the
+// theme's default colour. We make ONLY that transparent. Inner widgets keep
+// their own backgrounds (islands, dots, bars, etc). Do NOT blanket-clear
+// every box, or the island backgrounds disappear too.
+.background {
+  background-color: transparent;
+  background-image: none;
+}
+
+window {
+  background-color: transparent;
+}
+
+.bar-root {
+  background-color: transparent;
+  padding: 0 12px;
+}
+
+// ── generic island ──
+// Solid panel bg + border. Blur and shadows come from SwayFX layer_effects,
+// applied per window now that each island is its own surface.
+// Notch corner deferred: GTK has no clip-path (square corners are the
+// documented fallback in the design handoff).
+.island {
+  background-color: rgba(9, 7, 13, 0.86);
+  border: 1px solid rgba(232, 216, 255, 0.14);
+  border-radius: 0;
+  padding: 0 16px;
+  min-height: 56px;
+  transition: border-color 200ms ease;
+}
+
+// floating tag label above islands
+.island-tag {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: rgba(190, 175, 215, 0.55);
+}
+
+// ── workspaces island ──
+.ws-mini {
+  min-width: 34px;
+  min-height: 22px;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(232, 216, 255, 0.13);
+  border-radius: 0;
+  margin: 0;
+
+  &.ws-mini-active {
+    background-color: rgba(170, 0, 255, 0.12);
+    border: 1px solid rgba(170, 0, 255, 0.7);
+  }
+}
+
+.ws-win {
+  background-color: rgba(232, 216, 255, 0.09);
+  border: 1px solid rgba(232, 216, 255, 0.25);
+  border-radius: 0;
+
+  &.ws-win-focus {
+    background-color: rgba(170, 0, 255, 0.26);
+    border: 1px solid rgba(170, 0, 255, 0.75);
+  }
+}
+
+.ws-digit {
+  font-size: 13px;
+  font-weight: 600;
+  color: $accent;
+}
+
+.ws-name {
+  font-size: 9.5px;
+  color: $text-dim;
+}
+
+// ── now playing ──
+.eq {
+  min-height: 16px;
+  min-width: 15px;
+}
+
+.eq-bar {
+  min-width: 3px;
+  background-color: $accent;
+  border-radius: 0;
+}
+
+.eq-off .eq-bar { min-height: 4px; }
+
+.eq-on .b1 { min-height: 6px;  animation: eq 0.62s ease-in-out infinite alternate; }
+.eq-on .b2 { min-height: 14px; animation: eq 0.78s ease-in-out 0.1s infinite alternate; }
+.eq-on .b3 { min-height: 9px;  animation: eq 0.70s ease-in-out 0.05s infinite alternate; }
+
+@keyframes eq {
+  0%   { min-height: 3px; }
+  100% { min-height: 15px; }
+}
+
+.media-text {
+  font-size: 11.5px;
+  color: $text-sec;
+}
+
+// ── clock ──
+.clock-main {
+  font-family: $sans;
+  font-size: 27px;
+  font-weight: 300;
+  letter-spacing: 1.5px;
+  color: $text-pri;
+  padding-right: 4px;
+  min-width: 82px;
+}
+
+.clock-sec {
+  font-size: 11px;
+  color: $accent;
+  font-weight: 600;
+}
+
+.clock-date {
+  font-size: 9.5px;
+  color: $text-dim;
+}
+
+// ── vitals ──
+.vital-txt {
+  font-size: 11.5px;
+  color: $text-sec;
+}
+
+.vital-val {
+  font-size: 11.5px;
+  color: $text-pri;
+  font-weight: 600;
+  min-width: 26px;
+}
+
+.vital-div {
+  min-width: 1px;
+  min-height: 22px;
+  background-color: rgba(232, 216, 255, 0.1);
+}
+
+.hit-layer {
+  background-color: rgba(0, 0, 0, 0.001);
+}
+
+.vitals-hit {
+  background-color: transparent;
+  min-height: 40px;
+}
+
+.spark {
+  min-width: 46px;
+  min-height: 18px;
+  color: $accent;
+  background-color: rgba(170, 0, 255, 0.06);
+}
+
+.eth-dot {
+  min-width: 7px;
+  min-height: 7px;
+  border-radius: 0;
+  margin-left: 2px;
+
+  &.eth-on  { background-color: $accent; }
+  &.eth-off { background-color: $knob; }
+}
+
+// ── notifications square ──
+.island-notif {
+  min-width: 56px;
+  min-height: 56px;
+  padding: 0;
+}
+
+.notif-count {
+  font-size: 15px;
+  font-weight: 600;
+
+  &.notif-has   { color: $accent-text; }
+  &.notif-empty { color: $text-faint; }
+}
+
+.notif-pulse {
+  animation: pulseSq 3.5s ease-in-out 0.8s infinite;
+}
+
+@keyframes pulseSq {
+  0%   { box-shadow: 0 0 0 0 rgba(170, 0, 255, 0); }
+  50%  { box-shadow: 0 0 0 5px rgba(170, 0, 255, 0.14); }
+  100% { box-shadow: 0 0 0 0 rgba(170, 0, 255, 0); }
+}
+
+// ── battery: 5-cell frame + nub ──
+.bat-frame {
+  border: 1px solid rgba(232, 216, 255, 0.35);
+  padding: 1px 2px;
+  min-height: 11px;
+}
+
+.bat-cell {
+  min-width: 2.5px;
+  min-height: 7px;
+}
+
+.cell-on  { background-color: $accent; }
+.cell-off { background-color: rgba(232, 216, 255, 0.13); }
+
+.bat-nub {
+  min-width: 2px;
+  min-height: 4px;
+  background-color: rgba(232, 216, 255, 0.35);
+}
+
+// charging: brightness sweep left to right (staggered pulse per cell)
+.bat-chg .bat-cell { animation: chargeflow 1.5s ease-in-out infinite; }
+.bat-chg .bat-cell:nth-child(1) { animation-delay: 0s; }
+.bat-chg .bat-cell:nth-child(2) { animation-delay: 0.16s; }
+.bat-chg .bat-cell:nth-child(3) { animation-delay: 0.32s; }
+.bat-chg .bat-cell:nth-child(4) { animation-delay: 0.48s; }
+.bat-chg .bat-cell:nth-child(5) { animation-delay: 0.64s; }
+
+@keyframes chargeflow {
+  0%   { opacity: 0.18; }
+  50%  { opacity: 1; }
+  100% { opacity: 0.18; }
+}
+
+// discharging + low: warning blink
+.bat-low .cell-on {
+  background-color: #ff3d7f;
+  animation: batblink 1.1s linear infinite;
+}
+
+@keyframes batblink {
+  0%   { opacity: 1; }
+  45%  { opacity: 1; }
+  55%  { opacity: 0.15; }
+  95%  { opacity: 0.15; }
+  100% { opacity: 1; }
+}
+
+// ── shared popup shell ──
+.popup {
+  background-color: rgba(9, 7, 13, 0.92);
+  border: 1px solid rgba(232, 216, 255, 0.1);
+  padding: 0 18px 14px 18px;
+}
+
+// entrance: opacity + slide via margin (GTK3 has no transform)
+// timing per spec: 0.32s cubic-bezier(.22,1,.36,1)
+.popin {
+  animation: popin 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes popin {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+// modals: 0.34s, larger offset
+.popin-modal {
+  animation: popinmodal 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes popinmodal {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.popup-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: $text-pri;
+  padding: 16px 0 12px;
+}
+
+.popup-title-inline {
+  font-size: 15px;
+  font-weight: 600;
+  color: $text-pri;
+}
+
+.popup-foot {
+  font-size: 10.5px;
+  color: $text-dim;
+  padding: 11px 0 0;
+  border-top: 1px solid rgba(232, 216, 255, 0.07);
+  margin-top: 12px;
+}
+
+.glyph-sq {
+  background-color: rgba(170, 0, 255, 0.1);
+  border: 1px solid rgba(170, 0, 255, 0.35);
+}
+
+.glyph-txt {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: $accent-text;
+}
+
+// ── calendar ──
+.cal-head { padding: 16px 0 10px; }
+.cal-month { font-size: 16px; font-weight: 600; color: $text-pri; }
+.cal-year  { font-size: 10.5px; color: $accent; }
+.cal-dow   { padding: 0 14px; }
+.cal-dow label { font-size: 9.5px; color: $text-faint; min-height: 24px; }
+.cal-grid  { padding: 0 14px 10px; }
+.cal-cell-txt { font-size: 11px; color: $text-sec; }
+.cal-today {
+  background-color: rgba(170, 0, 255, 0.18);
+  border: 1px solid rgba(170, 0, 255, 0.7);
+}
+.cal-today-txt { color: $accent-text; font-weight: 700; }
+
+// ── control center ──
+.ctl-card {
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(232, 216, 255, 0.1);
+  padding: 11px 12px;
+  transition: all 200ms ease;
+}
+.ctl-on {
+  background-color: rgba(170, 0, 255, 0.1);
+  border-color: rgba(170, 0, 255, 0.5);
+}
+.ctl-label { font-size: 12px; font-weight: 600; color: $text-pri; }
+.ctl-sub   { font-size: 9.5px; color: $text-dim; }
+.ctl-track {
+  min-width: 30px; min-height: 14px;
+  background-color: rgba(232, 216, 255, 0.12);
+  padding: 2px;
+  transition: background-color 200ms ease;
+}
+.trk-on { background-color: rgba(170, 0, 255, 0.55); }
+.ctl-knob { min-width: 10px; min-height: 10px; background-color: $knob; transition: all 200ms ease; }
+.knb-on  { background-color: $accent-text; }
+.ctl-slider-block { padding: 12px 18px 2px; }
+.ctl-slider-lbl { font-size: 10.5px; color: $text-dim; }
+.ctl-slider-val { font-size: 10.5px; color: $text-pri; }
+
+.ctl-slider trough {
+  min-height: 22px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(232, 216, 255, 0.1);
+}
+.ctl-slider highlight { background-color: rgba(170, 0, 255, 0.55); }
+.ctl-slider slider { min-width: 0; min-height: 0; }
+
+// ── notifications ──
+.ntf-head  { padding: 16px 0 12px; }
+.ntf-clear { font-size: 10.5px; color: $text-dim; transition: color 200ms ease; }
+.ntf-clear:hover { color: $accent; }
+.ntf-row {
+  padding: 10px 0;
+  border-top: 1px solid rgba(232, 216, 255, 0.05);
+}
+.ntf-title { font-size: 13px; font-weight: 600; color: $text-pri; }
+.ntf-time  { font-size: 9.5px; color: $text-faint; }
+.ntf-body  { font-size: 10.5px; color: $text-mut; }
+.ntf-empty { font-size: 11px; color: $text-faint; padding: 18px 0 8px; }
+
+// ── music ──
+.mus-head  { padding: 18px 0 14px; }
+.mus-cover {
+  background-color: rgba(170, 0, 255, 0.1);
+  border: 1px solid rgba(170, 0, 255, 0.4);
+}
+.mus-cover-txt { font-size: 20px; font-weight: 700; color: $accent-text; }
+.mus-title  { font-size: 17px; font-weight: 600; color: $text-pri; }
+.mus-artist { font-size: 11px; color: $text-mut; }
+.mus-ctl-row { margin-top: 8px; }
+.mus-btn {
+  border: 1px solid rgba(232, 216, 255, 0.14);
+  transition: all 200ms ease;
+}
+.mus-btn label { font-size: 11px; color: $text-sec; }
+.mus-btn:hover { border-color: $accent; }
+.mus-btn-main {
+  background-color: rgba(170, 0, 255, 0.14);
+  border-color: rgba(170, 0, 255, 0.55);
+}
+.mus-btn-main label { color: $accent-text; }
+.mus-prog-block { padding: 0; }
+.mus-prog trough { min-height: 4px; background-color: rgba(255, 255, 255, 0.07); }
+.mus-prog highlight { background-color: $accent; }
+.mus-prog slider { min-width: 0; min-height: 0; }
+.mus-time { font-size: 9.5px; color: $text-faint; }
+
+// cava spectrum: 22 bars, desynced loops, paused when not playing
+.cava { padding: 8px 0 4px; min-height: 44px; }
+.cv { min-width: 12px; background-color: rgba(170, 0, 255, 0.55); }
+.cava .c1  { min-height: 9px; animation: cavabar 0.51s ease-in-out 0.09s infinite alternate; }
+.cava .c2  { min-height: 4px; animation: cavabar 0.45s ease-in-out 0.49s infinite alternate; }
+.cava .c3  { min-height: 8px; animation: cavabar 0.52s ease-in-out 0.03s infinite alternate; }
+.cava .c4  { min-height: 7px; animation: cavabar 0.49s ease-in-out 0.05s infinite alternate; }
+.cava .c5  { min-height: 7px; animation: cavabar 0.46s ease-in-out 0.05s infinite alternate; }
+.cava .c6  { min-height: 5px; animation: cavabar 0.45s ease-in-out 0.34s infinite alternate; }
+.cava .c7  { min-height: 4px; animation: cavabar 0.58s ease-in-out 0.35s infinite alternate; }
+.cava .c8  { min-height: 5px; animation: cavabar 0.57s ease-in-out 0.24s infinite alternate; }
+.cava .c9  { min-height: 6px; animation: cavabar 0.45s ease-in-out 0.52s infinite alternate; }
+.cava .c10 { min-height: 8px; animation: cavabar 0.53s ease-in-out 0.32s infinite alternate; }
+.cava .c11 { min-height: 5px; animation: cavabar 0.51s ease-in-out 0.49s infinite alternate; }
+.cava .c12 { min-height: 5px; animation: cavabar 0.46s ease-in-out 0.34s infinite alternate; }
+.cava .c13 { min-height: 4px; animation: cavabar 0.52s ease-in-out 0.33s infinite alternate; }
+.cava .c14 { min-height: 7px; animation: cavabar 0.56s ease-in-out 0.37s infinite alternate; }
+.cava .c15 { min-height: 6px; animation: cavabar 0.59s ease-in-out 0.26s infinite alternate; }
+.cava .c16 { min-height: 6px; animation: cavabar 0.54s ease-in-out 0.55s infinite alternate; }
+.cava .c17 { min-height: 9px; animation: cavabar 0.51s ease-in-out 0.48s infinite alternate; }
+.cava .c18 { min-height: 6px; animation: cavabar 0.61s ease-in-out 0.05s infinite alternate; }
+.cava .c19 { min-height: 9px; animation: cavabar 0.56s ease-in-out 0.53s infinite alternate; }
+.cava .c20 { min-height: 4px; animation: cavabar 0.54s ease-in-out 0.37s infinite alternate; }
+.cava .c21 { min-height: 10px; animation: cavabar 0.47s ease-in-out 0.25s infinite alternate; }
+.cava .c22 { min-height: 7px; animation: cavabar 0.52s ease-in-out 0.56s infinite alternate; }
+
+
+@keyframes cavabar {
+  0%   { min-height: 4px; }
+  100% { min-height: 38px; }
+}
+
+// ── system monitor ──
+.sys-head   { padding: 16px 0 10px; }
+.sys-kernel { font-size: 10px; color: $text-dim; }
+.sys-block  { padding: 0; margin-top: 10px; }
+.sys-lbl { font-size: 10.5px; color: $text-dim; }
+.sys-val { font-size: 10.5px; color: $text-pri; }
+.sys-bigchart {
+  color: $accent;
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(232, 216, 255, 0.08);
+}
+.sys-cores { padding: 12px 0 0; min-height: 40px; }
+.core-bar { background-color: rgba(170, 0, 255, 0.55); }
+.sys-cores-lbl { font-size: 9.5px; color: $text-faint; margin-left: 8px; }
+.sys-rambar trough {
+  min-height: 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(232, 216, 255, 0.08);
+}
+.sys-rambar highlight { background-color: $accent; }
+.sys-rambar slider { min-width: 0; min-height: 0; }
+.sys-stats-row { padding: 12px 0 0; }
+.sys-procs {
+  margin-top: 14px;
+  border-top: 1px solid rgba(232, 216, 255, 0.07);
+  padding: 10px 0 4px;
+}
+.proc-row  { padding: 4px 0; }
+.proc-name { font-size: 10.5px; color: $text-sec; min-width: 74px; }
+.proc-track { min-height: 3px; background-color: rgba(255, 255, 255, 0.05); }
+.proc-fill  { min-height: 3px; background-color: rgba(170, 0, 255, 0.7); }
+.proc-cpu  { font-size: 10.5px; color: $text-dim; min-width: 44px; }
+
+// ── modal scrims ──
+.scrim {
+  background-color: rgba(4, 3, 8, 0.4);
+  animation: scrimin 0.3s ease;
+}
+.scrim-dark { background-color: rgba(4, 3, 8, 0.45); }
+.scrim-center { padding: 0; }
+
+@keyframes scrimin {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.modal-headline {
+  font-family: $sans;
+  font-size: 15px;
+  font-weight: 300;
+  letter-spacing: 6px;
+  color: $text-mut;
+}
+
+.modal-hint { font-size: 10px; color: $text-faint; }
+
+// ── launcher ──
+.lch-box {
+  background-color: rgba(8, 6, 12, 0.94);
+  border: 1px solid rgba(232, 216, 255, 0.12);
+  min-width: 620px;
+  margin-top: 200px;
+}
+.lch-head { padding: 20px 22px 16px; }
+.lch-prompt { font-size: 19px; font-weight: 700; color: $accent; }
+.lch-input {
+  font-size: 18px;
+  color: $text-pri;
+  caret-color: $accent;
+  background-color: transparent;
+  border: none;
+  outline: none;
+}
+.key-chip {
+  font-size: 9.5px;
+  color: $text-faint;
+  border: 1px solid rgba(232, 216, 255, 0.14);
+  padding: 2px 7px;
+}
+.lch-sweep-track {
+  min-height: 1px;
+  margin: 0 22px;
+  background-color: rgba(232, 216, 255, 0.08);
+}
+.lch-sweep {
+  min-width: 180px;
+  min-height: 1px;
+  background-color: $accent;
+  animation: sweep 2.6s cubic-bezier(0.6, 0.1, 0.4, 0.9) infinite;
+}
+
+@keyframes sweep {
+  0%   { margin-left: 0px; }
+  100% { margin-left: 440px; }
+}
+
+.lch-row {
+  padding: 9px 16px;
+  transition: all 150ms ease;
+}
+.lch-row:hover {
+  background-color: rgba(170, 0, 255, 0.08);
+  border-left: 2px solid $accent;
+}
+.lch-name { font-size: 14.5px; font-weight: 500; color: $text-pri; }
+.lch-desc { font-size: 10.5px; color: $text-faint; }
+.lch-foot {
+  padding: 10px 22px 14px;
+  border-top: 1px solid rgba(232, 216, 255, 0.07);
+}
+.lch-foot label { font-size: 9.5px; color: $text-faint; }
+
+// ── workspace overview ──
+.ovw-card {
+  background-color: rgba(9, 7, 13, 0.88);
+  border: 1px solid rgba(232, 216, 255, 0.12);
+  padding: 10px;
+  min-width: 296px;
+  min-height: 180px;
+  transition: all 250ms ease;
+}
+.ovw-card:hover {
+  border-color: rgba(170, 0, 255, 0.85);
+}
+.ovw-active { border-color: rgba(170, 0, 255, 0.85); }
+.ovw-caption { padding: 6px 2px 0; }
+.ovw-digit { font-size: 17px; font-weight: 700; color: $accent; }
+.ovw-name  { font-size: 9.5px; color: $text-dim; }
+
+// ── power ──
+.pwr-card {
+  background-color: rgba(9, 7, 13, 0.88);
+  border: 1px solid rgba(232, 216, 255, 0.12);
+  padding: 22px 18px;
+  transition: all 200ms ease;
+}
+.pwr-card:hover {
+  background-color: rgba(170, 0, 255, 0.1);
+  border-color: rgba(170, 0, 255, 0.7);
+}
+.pwr-glyph { border-color: rgba(170, 0, 255, 0.4); }
+.pwr-glyph-txt { font-size: 15px; }
+.pwr-name { font-size: 16px; font-weight: 600; color: $text-pri; }
+.pwr-sub  { font-size: 9.5px; color: $text-dim; }
+
+// ── shortcuts ──
+.keys-box {
+  background-color: rgba(8, 6, 12, 0.94);
+  border: 1px solid rgba(232, 216, 255, 0.12);
+  min-width: 520px;
+  padding-bottom: 4px;
+}
+.keys-title { font-size: 16px; font-weight: 600; color: $text-pri; padding: 20px 26px 14px; }
+.keys-box > box { padding: 0 26px 18px; }
+.keys-row { padding: 6px 0; }
+.key-chip-box {
+  border: 1px solid rgba(170, 0, 255, 0.4);
+  background-color: rgba(170, 0, 255, 0.08);
+  padding: 3px 8px;
+}
+.key-chip-txt { font-size: 10.5px; color: $accent-text; }
+.keys-desc { font-size: 11.5px; color: $text-mut; }
+
+// off state MUST be last: same specificity as .cava .cN rules, order wins
+.cava-off .cv {
+  animation: none;
+  min-height: 3px;
+}
+
+// ── personality layer ──
+.v-prefix { font-size: 12px; font-weight: 600; color: $accent; }
+.v-arrow  { font-size: 12px; color: $text-faint; }
+.v-text   { font-size: 12px; color: $text-mut; }
+
+.v-cursor {
+  min-width: 7px;
+  min-height: 13px;
+  background-color: $accent;
+  animation: cblink 1.1s linear infinite;
+}
+
+@keyframes cblink {
+  0%   { opacity: 1; }
+  45%  { opacity: 1; }
+  55%  { opacity: 0; }
+  95%  { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.keyshint { font-size: 10px; color: $text-faint; }
+
+.ghost-digit {
+  font-family: $sans;
+  font-size: 320px;
+  font-weight: 100;
+  color: rgba(170, 0, 255, 0.55);
+  animation: ghostout 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes ghostout {
+  0%   { opacity: 1; }
+  25%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.toast {
+  background-color: rgba(9, 7, 13, 0.92);
+  border: 1px solid rgba(232, 216, 255, 0.14);
+  padding: 6px 16px;
+}
+
+.toast-txt {
+  font-size: 11px;
+  font-weight: 600;
+  color: $text-pri;
+}
