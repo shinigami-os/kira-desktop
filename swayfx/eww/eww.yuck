@@ -136,7 +136,7 @@
 
 (defwindow bar-vitals
   :monitor 0
-  :geometry (geometry :x "110px" :y "13px" :width "512px" :height "56px" :anchor "top right")
+  :geometry (geometry :x "110px" :y "13px" :width "522px" :height "56px" :anchor "top right")
   :stacking "fg" :exclusive false :namespace "eww-bar"
   (island-vitals))
 

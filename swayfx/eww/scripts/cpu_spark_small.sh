@@ -5,7 +5,7 @@ OUT=/tmp/kira-sys
 FILE="$OUT/spark-small.svg"
 mkdir -p "$OUT"
 
-cur=$(sh /root/.config/eww/scripts/cpu.sh 2>/dev/null)
+cur=$(sh scripts/cpu.sh 2>/dev/null)
 case "$cur" in ''|*[!0-9]*) cur=0 ;; esac
 echo "$cur" >> "$HIST"
 tail -n 24 "$HIST" > "$HIST.tmp" && mv "$HIST.tmp" "$HIST"

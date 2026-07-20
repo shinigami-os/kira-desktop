@@ -272,10 +272,10 @@
            :valign "center" :halign "center" :hexpand true :vexpand true
         (label :class "modal-headline" :text "leaving so soon?")
         (box :class "popin-modal" :space-evenly false :spacing 20 :halign "center"
-          (pwr-card :glyph "lk" :name "lock"     :sub "swaylock"      :cmd "sh -c 'scripts/popup.sh close-all; swaylock --color 0a0a0f --daemonize'")
-          (pwr-card :glyph "zz" :name "suspend"  :sub "echo mem"      :cmd "sh -c 'scripts/popup.sh close-all; echo mem > /sys/power/state'")
-          (pwr-card :glyph "rb" :name "reboot"   :sub "runit stage 3" :cmd "reboot")
-          (pwr-card :glyph "off" :name "shutdown" :sub "poweroff"     :cmd "poweroff"))
+          (pwr-card :glyph "lk" :name "lock"     :sub "hyprlock"      :cmd "sh -c 'scripts/popup.sh close-all; hyprlock &'")
+          (pwr-card :glyph "zz" :name "suspend"  :sub "loginctl"      :cmd "sh -c 'scripts/popup.sh close-all; loginctl suspend'")
+          (pwr-card :glyph "rb" :name "reboot"   :sub "loginctl"      :cmd "loginctl reboot")
+          (pwr-card :glyph "off" :name "shutdown" :sub "loginctl"     :cmd "loginctl poweroff"))
         (label :class "modal-hint" :text "click · esc stay")))))
 
 (defwindow modal-power
