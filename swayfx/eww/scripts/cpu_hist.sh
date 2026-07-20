@@ -1,8 +1,6 @@
 #!/bin/sh
 # Append CPU sample to 48-slot ring, render big sysmon SVG to a STABLE path.
-# Paths are per-uid: a fixed shared /tmp path gets created root-owned the
-# first time anything runs this as root (sudo testing, an old root-autologin
-# session, etc.), permanently locking the real user out of it afterwards.
+# Per-uid, a shared path can get root-owned from a stray sudo run and lock out the real user.
 HIST="/tmp/kira_cpuhist48-$(id -u)"
 OUT="/tmp/kira-sys-$(id -u)"
 FILE="$OUT/spark.svg"

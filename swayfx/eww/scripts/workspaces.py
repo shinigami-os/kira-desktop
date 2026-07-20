@@ -2,9 +2,7 @@
 import sys, json, os, glob, time
 
 CW, CH, INSET = 34, 22, 3
-# per-uid: a fixed shared /tmp path gets created root-owned the first time
-# anything runs this as root (sudo testing, an old root-autologin session,
-# etc.), permanently locking the real user out of it afterwards
+# per-uid, a shared path can get root-owned from a stray sudo run and lock out the real user
 OUT = f"/tmp/kira-ws-{os.getuid()}"
 
 def build_svg(wins):
