@@ -1,7 +1,8 @@
 #!/bin/sh
 # Append CPU sample to 24-slot ring, render small island sparkline to stable path.
-HIST=/tmp/kira_cpuhist24
-OUT=/tmp/kira-sys
+# Paths are per-uid - see cpu_hist.sh for why a fixed shared /tmp path is unsafe.
+HIST="/tmp/kira_cpuhist24-$(id -u)"
+OUT="/tmp/kira-sys-$(id -u)"
 FILE="$OUT/spark-small.svg"
 mkdir -p "$OUT"
 
