@@ -21,7 +21,7 @@ The corresponding flux meta-package (`kira-desktop-swayFX`, `kira-desktop-sleex`
 
 ## Versioning
 
-Same release-based scheme as `flux`/`kira-base`: `YY.MM`, optionally `-N` for a hotfix release in that month (current: `26.07-2`). Tag with `git tag <version> && git push --tags`, no GitHub Release object needed.
+Same release-based scheme as `flux`/`kira-base`: `YY.MM`, optionally `-N` for a hotfix release in that month (current: `26.08`). Tag with `git tag <version> && git push --tags`, no GitHub Release object needed.
 
 ## Status
 Both `swayfx/` and `sleex/` are populated and installed on real hardware via their respective flux meta-packages. See the [Kira Linux specification](https://github.com/shinigami-os) and the project roadmap.
