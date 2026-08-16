@@ -25,6 +25,9 @@ input "type:keyboard" {
 }
 
 ### ─── output / wallpaper ───
+# force 100% - without this sway auto-picks a fractional scale (1.25/1.5)
+# on panels that report a high enough DPI, which we don't want by default
+output * scale 1
 output * bg /usr/share/kira/wallpapers/default.png fill
 
 ### ─── fonts ───
@@ -32,7 +35,6 @@ font pango:JetBrains Mono 10
 
 ### ═══════════════════ SwayFX eye-candy ═══════════════════
 corner_radius 11
-xwayland disable
 focus_follows_mouse yes
 
 blur enable
