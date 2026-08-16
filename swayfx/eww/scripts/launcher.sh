@@ -25,7 +25,7 @@ case "$lower" in
   sudo)      eww update lch_results="$(egg 'you own this machine. no need to ask.')"; exit 0 ;;
   meow)      eww update lch_results="$(egg '…this is a linux distribution.')"; exit 0 ;;
   love)      eww update lch_results="$(egg '…noted.')"; exit 0 ;;
-  help)      eww update lch_results="$(egg 'press ? — or just breathe.')"; exit 0 ;;
+  help)      eww update lch_results="$(egg 'press ? - or just breathe.')"; exit 0 ;;
   42)        eww update lch_results="$(egg 'obviously.')"; exit 0 ;;
 esac
 

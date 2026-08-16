@@ -8,5 +8,4 @@ case "$1" in
     if [ "$new" = 1 ]; then makoctl mode -a do-not-disturb >/dev/null 2>&1
     else makoctl mode -r do-not-disturb >/dev/null 2>&1; fi ;;
 esac
-# push fresh state to eww
 eww update toggles="$(sh "$(dirname "$0")/toggles.sh")" 2>/dev/null

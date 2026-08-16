@@ -72,7 +72,6 @@ if [ "$func" = "validate" ]; then
         exit 1
     fi
 
-    # Parse theme into key=value temp file
     tmp=/tmp/kira-desktop-validate
     rm -f "$tmp"
     touch "$tmp"
@@ -87,7 +86,6 @@ if [ "$func" = "validate" ]; then
         echo "$key=$value" >> "$tmp"
     done <"$theme"
 
-    # Validate
     errors=0
     warnings=0
 
@@ -150,14 +148,11 @@ if [ "$func" = "validate" ]; then
 fi
 
 if [ "$func" = "apply" ]; then
-    # step 1 : check argument
     name=$2
     if [ -z "$name" ]; then
         echo "Please specify a theme name"
         exit 1
     fi
-
-    # step 2 : check if theme exists
 
     if [ -f "$USR_DIR/$name.theme" ]; then
         theme=$USR_DIR/$name.theme
@@ -168,16 +163,13 @@ if [ "$func" = "apply" ]; then
         exit 1
     fi
 
-    # step 3 : parse theme file in memory
-
     echo "DEBUG: creating temp file"
     touch /tmp/kira-desktop.theme
     echo "DEBUG: temp file exists: $(ls -la /tmp/kira-desktop.theme)"
-    #build a sed expression for each line
     while IFS= read -r line; do
         case "$line" in
-            '#'*) continue ;;  # comment
-            '')   continue ;;  # blank
+            '#'*) continue ;;
+            '')   continue ;;
         esac
 
         key=$(echo $line | cut -d= -f1 | xargs)
@@ -186,9 +178,6 @@ if [ "$func" = "apply" ]; then
         echo "s|%KIRA_CONFIG%|$HOME/.config/kira-desktop|g" >> /tmp/kira-desktop.theme
     done <"$theme"
 
-
-    # step 4 : apply theme
-    
     for componentTPL in $COMPONENTS; do
         componentPath=$componentTPL
         componentTPL=$componentTPL.tpl
@@ -210,19 +199,15 @@ if [ "$func" = "apply" ]; then
         esac
     done
 
-    # step 5 : Write current theme to config
-
     echo $name > $USR_DIR/current.theme
 
-    # step 6 : reload daemons
     if [ -n "$SWAYSOCK" ]; then
         swaymsg reload
         makoctl reload
         eww kill 2>/dev/null
-        ~/.config/eww/launch-bars.sh  # small script to launch eww bar on each monitor
+        ~/.config/eww/launch-bars.sh
     fi
 
-    # step 7 : done !
     rm /tmp/kira-desktop.theme
     echo "Theme $name applied"
 fi

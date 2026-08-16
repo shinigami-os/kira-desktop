@@ -1,7 +1,5 @@
 #!/bin/sh
-# debug: trace every step to a fixed, always-writable location - do not
-# rely on XDG_RUNTIME_DIR for this log since a failure to set that dir up
-# is one of the things we're trying to catch
+# log here, not under XDG_RUNTIME_DIR - that's exactly the dir setup we're trying to debug
 exec > "/tmp/kira-start-sleex-debug-$(id -u).log" 2>&1
 set -x
 set -e
@@ -16,8 +14,7 @@ export _JAVA_AWT_WM_NONREPARENTING=1
 export WLR_DRM_NO_ATOMIC=1
 export XDG_RUNTIME_DIR=/run/user/$(id -u)
 
-# without this, fuzzel (and anything else scanning .desktop files) never sees
-# Flatpak-installed apps, and their launchers/CLI wrappers stay invisible
+# without this, fuzzel and other .desktop scanners never see Flatpak-installed apps
 export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
 export PATH="/var/lib/flatpak/exports/bin:$PATH"
 

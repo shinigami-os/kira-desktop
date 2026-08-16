@@ -2,8 +2,7 @@
 # Start the eww daemon and open all 5 bar islands. Called by sway (exec_always).
 cd "$(dirname "$0")" || exit 1
 
-# Force GTK to use the Wayland backend. Without this, eww's daemon can hit
-# "Failed to initialize GTK" when the environment is ambiguous.
+# without this, eww's daemon can hit "Failed to initialize GTK" when the environment is ambiguous
 export GDK_BACKEND=wayland
 export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
 

@@ -1,6 +1,5 @@
 #!/bin/sh
-# Emit workspace array with mini layouts. Uses get_workspaces for the active
-# flag (reliable) and get_tree for window geometry.
+# Emit workspace array with mini layouts: get_workspaces gives the reliable active flag, get_tree gives window geometry.
 emit() {
   ws=$(swaymsg -t get_workspaces 2>/dev/null)
   tree=$(swaymsg -t get_tree 2>/dev/null)

@@ -1,6 +1,5 @@
 #!/bin/sh
-# Start the PipeWire stack in the correct order, under the session bus.
-# Kill any stale instances first.
+# order matters: wireplumber and pipewire-pulse need pipewire's socket already up
 pkill -x pipewire 2>/dev/null
 pkill -x wireplumber 2>/dev/null
 pkill -x pipewire-pulse 2>/dev/null

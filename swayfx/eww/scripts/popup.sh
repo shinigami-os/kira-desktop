@@ -1,5 +1,5 @@
 #!/bin/sh
-# popup.sh <name>|close-all  — single-open toggle across popups and modals
+# popup.sh <name>|close-all - single-open toggle across popups and modals
 cd "$(dirname "$0")/.." || exit 1
 name="$1"; [ -z "$name" ] && exit 0
 

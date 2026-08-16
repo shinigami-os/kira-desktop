@@ -11,8 +11,7 @@ export WLR_DRM_NO_ATOMIC=1
 export XDG_RUNTIME_DIR=/run/user/$(id -u)
 export GTK_THEME=Adwaita:dark
 
-# without this, fuzzel (and anything else scanning .desktop files) never sees
-# Flatpak-installed apps, and their launchers/CLI wrappers stay invisible
+# without this, fuzzel and other .desktop scanners never see Flatpak-installed apps
 export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
 export PATH="/var/lib/flatpak/exports/bin:$PATH"
 

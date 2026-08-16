@@ -44,7 +44,6 @@ def find_least_busy_region(image_path, region_width=300, region_height=200, scre
             print(f"Using original image size: {orig_w}x{orig_h}")
     arr = img.astype(np.float64)
     h, w = arr.shape
-    # Use OpenCV's integral for fast computation
     integral = cv2.integral(arr, sdepth=cv2.CV_64F)[1:,1:]
     integral_sq = cv2.integral(arr**2, sdepth=cv2.CV_64F)[1:,1:]
     def region_sum(ii, x1, y1, x2, y2):
@@ -102,7 +101,6 @@ def find_largest_region(image_path, screen_width=None, screen_height=None, verbo
             print(f"Using original image size: {orig_w}x{orig_h}")
     arr = img.astype(np.float64)
     h, w = arr.shape
-    # Use OpenCV's integral for fast computation
     integral = cv2.integral(arr, sdepth=cv2.CV_64F)[1:,1:]
     integral_sq = cv2.integral(arr**2, sdepth=cv2.CV_64F)[1:,1:]
     def region_sum(ii, x1, y1, x2, y2):
@@ -225,7 +223,6 @@ def get_dominant_color(image_path, x, y, w, h, screen_width=None, screen_height=
         new_h = int(orig_h * scale)
         img = cv2.resize(img, (new_w, new_h), interpolation=cv2.INTER_LANCZOS4)
         img = center_crop(img, screen_width, screen_height)
-    # Ensure region is within bounds
     x = max(0, x)
     y = max(0, y)
     w = max(1, min(w, img.shape[1] - x))
@@ -234,14 +231,13 @@ def get_dominant_color(image_path, x, y, w, h, screen_width=None, screen_height=
     if region.size == 0 or region.shape[0] == 0 or region.shape[1] == 0:
         return [0, 0, 0]
     region = region.reshape((-1, 3))
-    # Filter out black pixels (optional, improves accuracy for some images)
+    # optional: filtering black pixels improves accuracy for some images
     non_black = region[np.any(region > 10, axis=1)]
     if non_black.shape[0] == 0:
         non_black = region
     region = np.float32(non_black)
     if region.shape[0] < 3:
         return [int(x) for x in np.mean(region, axis=0)]
-    # K-means to find dominant color
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
     K = min(3, region.shape[0])
     _, labels, centers = cv2.kmeans(region, K, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
@@ -281,7 +277,6 @@ def main():
         if center:
             if args.visual_output:
                 draw_largest_region(args.image_path, center, size, screen_width=args.screen_width, screen_height=args.screen_height, screen_mode=args.screen_mode)
-            # Extract dominant color
             cx, cy = center
             region_w, region_h = size
             x1 = cx - region_w // 2
@@ -316,7 +311,6 @@ def main():
     )
     if args.visual_output:
         draw_region(args.image_path, coords, region_width=args.width, region_height=args.height, screen_width=args.screen_width, screen_height=args.screen_height, screen_mode=args.screen_mode)
-    # Output JSON with center point
     center_x = coords[0] + args.width // 2
     center_y = coords[1] + args.height // 2
     dominant_color = get_dominant_color(

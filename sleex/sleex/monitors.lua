@@ -1,4 +1,3 @@
--- MONITOR CONFIG
 hl.monitor({
     output = "",
     mode = "preferred",

@@ -20,9 +20,7 @@ $mono: "JetBrains Mono", "DejaVu Sans Mono", monospace;
 $sans: "Raleway", sans-serif;
 
 // ── reset ──
-// NOTE: do NOT use `* { all: unset }` in GTK CSS. It strips inherited text
-// rendering from labels and leaves them invisible unless every label has a
-// full explicit rule. Reset conservatively instead.
+// NOTE: don't use `* { all: unset }` in GTK CSS - it strips label text rendering unless every label has an explicit rule
 * {
   margin: 0;
   padding: 0;
@@ -39,10 +37,7 @@ label {
 }
 
 // ── window transparency (ONLY the top-level widget) ──
-// eww's top-level GTK window carries the .background class and paints the
-// theme's default colour. We make ONLY that transparent. Inner widgets keep
-// their own backgrounds (islands, dots, bars, etc). Do NOT blanket-clear
-// every box, or the island backgrounds disappear too.
+// only eww's top-level .background gets transparent - blanket-clearing every box would erase island backgrounds too
 .background {
   background-color: transparent;
   background-image: none;
@@ -58,10 +53,7 @@ window {
 }
 
 // ── generic island ──
-// Solid panel bg + border. Blur and shadows come from SwayFX layer_effects,
-// applied per window now that each island is its own surface.
-// Notch corner deferred: GTK has no clip-path (square corners are the
-// documented fallback in the design handoff).
+// blur/shadow come from SwayFX layer_effects per window; square corners are the documented fallback since GTK has no clip-path
 .island {
   background-color: rgba(9, 7, 13, 0.86);
   border: 1px solid rgba(232, 216, 255, 0.14);
@@ -292,7 +284,6 @@ window {
 }
 
 // entrance: opacity + slide via margin (GTK3 has no transform)
-// timing per spec: 0.32s cubic-bezier(.22,1,.36,1)
 .popin {
   animation: popin 0.32s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -302,7 +293,7 @@ window {
   100% { opacity: 1; }
 }
 
-// modals: 0.34s, larger offset
+// modals: larger offset than popin
 .popin-modal {
   animation: popinmodal 0.34s cubic-bezier(0.22, 1, 0.36, 1);
 }

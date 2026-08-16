@@ -1,5 +1,4 @@
-# This is a vdirsyncer configuration sample for syncing Google Calendar with a local filesystem.
-# Replace YOUR_CLIENT_ID and YOUR_CLIENT_SECRET with your actual Google API credentials.
+# sample config for syncing Google Calendar with a local filesystem - replace YOUR_CLIENT_ID/YOUR_CLIENT_SECRET with real credentials
 
 [general]
 status_path = "~/.local/share/vdirsyncer/status/"
