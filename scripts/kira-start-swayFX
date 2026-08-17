@@ -1,4 +1,7 @@
 #!/bin/sh
+# log here, not under XDG_RUNTIME_DIR - that's exactly the dir setup we're trying to debug
+exec > "/tmp/kira-start-swayFX-debug-$(id -u).log" 2>&1
+set -x
 set -e
 
 export XDG_CURRENT_DESKTOP=sway
