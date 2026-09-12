@@ -146,11 +146,18 @@ window {
   animation: shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97);
 }
 
+/* GTK CSS keyframes don't accept comma-grouped selectors either - each stop
+   needs its own block */
 @keyframes shake {
-  10%, 90% { margin-left: -1px; }
-  20%, 80% { margin-left: 2px; }
-  30%, 50%, 70% { margin-left: -4px; }
-  40%, 60% { margin-left: 4px; }
+  10% { margin-left: -1px; }
+  20% { margin-left: 2px; }
+  30% { margin-left: -4px; }
+  40% { margin-left: 4px; }
+  50% { margin-left: -4px; }
+  60% { margin-left: 4px; }
+  70% { margin-left: -4px; }
+  80% { margin-left: 2px; }
+  90% { margin-left: -1px; }
 }
 
 .login-pw-errmsg {
@@ -275,6 +282,7 @@ window {
 }
 
 @keyframes dotpulse {
-  0%, 100% { opacity: 0.3; }
-  50%      { opacity: 1; }
+  0%   { opacity: 0.3; }
+  50%  { opacity: 1; }
+  100% { opacity: 0.3; }
 }
