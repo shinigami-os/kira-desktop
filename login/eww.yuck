@@ -50,8 +50,8 @@
             (box :class "login-session-row ${s.name == (selected_session == "" ? sessions_json[0].name : selected_session) ? "row-selected" : ""}"
                  :space-evenly false :spacing 8
               (box :class "login-session-dot ${s.name == (selected_session == "" ? sessions_json[0].name : selected_session) ? "dot-selected" : ""}")
-              (label :class "login-session-name" :text s.name :hexpand true :halign "start")
-              (label :class "login-session-type" :text s.type :halign "end"))))))
+              (label :class "login-session-name" :text {s.name} :hexpand true :halign "start")
+              (label :class "login-session-type" :text {s.type} :halign "end"))))))
     (eventbox :onclick "eww update dropdown_open=${!dropdown_open}" :cursor "pointer"
       (box :class "login-session-trigger ${dropdown_open ? "trigger-open" : ""}" :space-evenly false :spacing 6 :valign "center"
         (label :class "login-session-current" :text {selected_session == "" ? sessions_json[0].name : selected_session})
