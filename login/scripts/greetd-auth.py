@@ -40,7 +40,10 @@ def recv(sock):
 
 
 def eww(*args):
-    subprocess.run(["eww", *args], check=False)
+    # without --config, eww falls back to $XDG_CONFIG_HOME/eww (nonexistent
+    # for the greetd user) instead of the actual running daemon's config
+    # dir, and just fails to connect
+    subprocess.run(["eww", "--config", "/etc/greetd/kira-login", *args], check=False)
 
 
 def resolve_session(name):

@@ -6,10 +6,16 @@
 dir="$(dirname "$0")"
 attempt_file="/tmp/kira-login-attempts"
 
-eww update auth_state=checking auth_msg=""
+# every eww CLI call here needs --config: without it eww falls back to
+# $XDG_CONFIG_HOME/eww (nonexistent for the greetd user) instead of the
+# actual running daemon's config dir, and just fails to connect - silently,
+# since nothing here captures its stderr
+eww="eww --config /etc/greetd/kira-login"
 
-session=$(eww get selected_session)
-pw=$(eww get pw)
+$eww update auth_state=checking auth_msg=""
+
+session=$($eww get selected_session)
+pw=$($eww get pw)
 
 if printf '%s\n' "$pw" | python3 "$dir/greetd-auth.py" "$session"; then
     rm -f "$attempt_file"
@@ -25,6 +31,6 @@ case "$attempt" in
     *) msg="try again" ;;
 esac
 
-eww update auth_state=error auth_msg="$msg" pw=""
+$eww update auth_state=error auth_msg="$msg" pw=""
 sleep 1.3
-eww update auth_state=idle
+$eww update auth_state=idle

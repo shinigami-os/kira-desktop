@@ -43,7 +43,7 @@
     (box :class "login-pw-row ${auth_state == "error" ? "pw-error" : ""}" :space-evenly false :spacing 6 :valign "center"
       (label :class "login-prompt ${auth_state == "error" ? "prompt-error" : ""}" :text "❯")
       (input :class "login-input" :password true :value pw :hexpand true
-             :onchange "eww update pw={}"
+             :onchange "eww --config /etc/greetd/kira-login update pw={}"
              :onaccept "scripts/authenticate.sh")
       (box :class "login-verify-dot ${auth_state == "checking" ? "dot-show" : ""}"))
     (box :class "login-pw-rule ${auth_state == "error" ? "rule-error" : ""}"
@@ -55,13 +55,13 @@
     (revealer :transition "slidedown" :reveal dropdown_open :duration "240ms"
       (box :class "login-session-menu" :orientation "v" :space-evenly false
         (for s in sessions_json
-          (eventbox :onclick "eww update selected_session='${s.name}' dropdown_open=false" :cursor "pointer"
+          (eventbox :onclick "eww --config /etc/greetd/kira-login update selected_session='${s.name}' dropdown_open=false" :cursor "pointer"
             (box :class "login-session-row ${s.name == (selected_session == "" ? sessions_json[0].name : selected_session) ? "row-selected" : ""}"
                  :space-evenly false :spacing 8
               (box :class "login-session-dot ${s.name == (selected_session == "" ? sessions_json[0].name : selected_session) ? "dot-selected" : ""}")
               (label :class "login-session-name" :text {s.name} :hexpand true :halign "start")
               (label :class "login-session-type" :text {s.type} :halign "end"))))))
-    (eventbox :onclick "echo trigger-click $(date +%T) dropdown_open=${dropdown_open} >> /tmp/kira-login-click.log; eww update dropdown_open=${!dropdown_open}" :cursor "pointer"
+    (eventbox :onclick "eww --config /etc/greetd/kira-login update dropdown_open=${!dropdown_open}" :cursor "pointer"
       (box :class "login-session-trigger ${dropdown_open ? "trigger-open" : ""}" :space-evenly false :spacing 6 :valign "center"
         (label :class "login-session-current" :text {selected_session == "" ? sessions_json[0].name : selected_session})
         (label :class "login-chevron" :text {dropdown_open ? "▴" : "▾"})))))

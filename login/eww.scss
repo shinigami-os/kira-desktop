@@ -50,10 +50,10 @@ window {
      size here instead; cage fullscreens its client regardless once mapped. */
   min-width: 1920px;
   min-height: 1080px;
-  // relative url() didn't render even though the file is right next to this
-  // scss (no load error in the log either) - absolute path removes any doubt
-  // about what directory GTK/grass_compiler resolve it against
-  background-image: url("/etc/greetd/kira-login/login-wallpaper.png");
+  // eww loads its compiled CSS via gtk_css_provider_load_from_data (a raw
+  // byte string, not a file), so there is no base directory for GTK to
+  // resolve a bare path against at all - it needs an actual file:// URI
+  background-image: url("file:///etc/greetd/kira-login/login-wallpaper.png");
   background-size: cover;
   background-position: center;
   background-color: #0d0820;
