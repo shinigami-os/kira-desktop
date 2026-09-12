@@ -39,6 +39,14 @@ window {
 // ── background + legibility scrim ──
 // wallpaper stays still on the login screen (unlike the desktop's ken-burns drift)
 .login-bg {
+  /* :geometry's explicit width/height only actually applies to layer-shell
+     surfaces - on the plain xdg-toplevel fallback (cage has no layer-shell)
+     eww falls back to GTK's natural-size computation, and hexpand/vexpand
+     alone don't give a window content any actual size to request, so the
+     window committed as 0x0 and wlroots refused it. Force a real natural
+     size here instead; cage fullscreens its client regardless once mapped. */
+  min-width: 1920px;
+  min-height: 1080px;
   background-image: linear-gradient(180deg,
       rgba(10, 6, 24, 0.32) 0%,
       rgba(10, 6, 24, 0) 30%,
