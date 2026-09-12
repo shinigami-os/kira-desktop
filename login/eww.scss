@@ -38,9 +38,10 @@ window {
 
 // ── background + legibility scrim ──
 // wallpaper stays still on the login screen (unlike the desktop's ken-burns drift).
-// Split into two stacked layers rather than one comma-layered background-image:
-// GTK CSS's background-image layering with a mixed gradient+url list didn't
-// actually apply (the url image never showed), so each layer gets its own box.
+// The wallpaper itself is a real `image` widget now, not CSS background-image -
+// that property never rendered here despite several attempts (relative path,
+// absolute path, file:// URI - all parsed without error, none painted anything),
+// so this box just provides sizing and a fallback color if the image fails.
 .login-bg {
   /* :geometry's explicit width/height only actually applies to layer-shell
      surfaces - on the plain xdg-toplevel fallback (cage has no layer-shell)
@@ -50,12 +51,6 @@ window {
      size here instead; cage fullscreens its client regardless once mapped. */
   min-width: 1920px;
   min-height: 1080px;
-  // eww loads its compiled CSS via gtk_css_provider_load_from_data (a raw
-  // byte string, not a file), so there is no base directory for GTK to
-  // resolve a bare path against at all - it needs an actual file:// URI
-  background-image: url("file:///etc/greetd/kira-login/login-wallpaper.png");
-  background-size: cover;
-  background-position: center;
   background-color: #0d0820;
 }
 

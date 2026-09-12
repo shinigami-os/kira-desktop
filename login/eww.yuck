@@ -24,8 +24,16 @@
 
 ;; ══════════════════════════ elements ══════════════════════════
 
+;; CSS background-image never rendered here (no error either - eww loads its
+;; CSS via gtk_css_provider_load_from_data, a byte string with no base path,
+;; and url() apparently never resolved against it). eww's native `image`
+;; widget is a real gtk::Image, already proven to load files fine elsewhere
+;; in this codebase (workspace thumbnails), so use that instead of fighting
+;; CSS for the one place a raster image needs to appear. 1672x941 source is
+;; already ~16:9, so stretching to 1920x1080 is a negligible distortion.
 (defwidget login-bg []
-  (box :class "login-bg" :hexpand true :vexpand true))
+  (box :class "login-bg" :hexpand true :vexpand true
+    (image :path "/etc/greetd/kira-login/login-wallpaper.png" :image-width 1920 :image-height 1080)))
 
 ;; separate layer from login-bg: GTK CSS's background-image didn't apply a
 ;; mixed gradient+url() layer list, only the last one in it - so the wallpaper
