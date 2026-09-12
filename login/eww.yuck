@@ -14,7 +14,10 @@
 (defvar auth_state "idle")
 (defvar auth_msg "")
 
-(deflisten sessions_json :initial "[]" "scripts/sessions.sh")
+;; never an empty array: sessions_json[0] is indexed unconditionally below,
+;; and that crashes eww outright for the moment before sessions.sh's first
+;; real line arrives
+(deflisten sessions_json :initial '[{"name":"tty","cmd":["__TTY__"],"type":"console"}]' "scripts/sessions.sh")
 
 (defpoll time_main :interval "30s" :initial "--:--" "date +%H:%M")
 (defpoll date_str   :interval "60s" :initial ""      "scripts/date.sh")
