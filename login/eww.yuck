@@ -27,6 +27,12 @@
 (defwidget login-bg []
   (box :class "login-bg" :hexpand true :vexpand true))
 
+;; separate layer from login-bg: GTK CSS's background-image didn't apply a
+;; mixed gradient+url() layer list, only the last one in it - so the wallpaper
+;; and its legibility scrim are two stacked boxes instead of one declaration
+(defwidget login-scrim-gradient []
+  (box :class "login-scrim-gradient" :hexpand true :vexpand true))
+
 (defwidget login-clock []
   (box :class "login-clock" :orientation "v" :halign "end" :valign "start" :space-evenly false :spacing 4
     (label :class "login-time" :halign "end" :text time_main)
@@ -58,16 +64,16 @@
     (eventbox :onclick "eww update dropdown_open=${!dropdown_open}" :cursor "pointer"
       (box :class "login-session-trigger ${dropdown_open ? "trigger-open" : ""}" :space-evenly false :spacing 6 :valign "center"
         (label :class "login-session-current" :text {selected_session == "" ? sessions_json[0].name : selected_session})
-        (label :class "login-chevron" :text {dropdown_open ? "︿" : "﹀"})))))
+        (label :class "login-chevron" :text {dropdown_open ? "▴" : "▾"})))))
 
 (defwidget login-power []
   (box :class "login-power" :halign "end" :valign "end" :space-evenly false :spacing 4
     (eventbox :onclick "scripts/power.sh shutdown" :cursor "pointer"
-      (box :class "login-power-btn" (label :class "login-power-icon" :text "")))
+      (box :class "login-power-btn" (label :class "login-power-icon" :text "")))
     (eventbox :onclick "scripts/power.sh reboot" :cursor "pointer"
-      (box :class "login-power-btn" (label :class "login-power-icon" :text "")))
+      (box :class "login-power-btn" (label :class "login-power-icon" :text "")))
     (eventbox :onclick "scripts/power.sh suspend" :cursor "pointer"
-      (box :class "login-power-btn" (label :class "login-power-icon" :text "")))))
+      (box :class "login-power-btn" (label :class "login-power-icon" :text "")))))
 
 (defwidget login-scrim []
   (box :class "login-scrim ${auth_state == "success" ? "scrim-show" : ""}" :hexpand true :vexpand true :halign "fill" :valign "fill"
@@ -89,6 +95,7 @@
   :geometry (geometry :x "0px" :y "0px" :width "1920px" :height "1080px" :anchor "center")
   (overlay
     (login-bg)
+    (login-scrim-gradient)
     (login-clock)
     (login-password)
     (login-session)
