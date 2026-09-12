@@ -15,6 +15,15 @@ eww="eww --config /etc/greetd/kira-login"
 $eww update auth_state=checking auth_msg=""
 
 session=$($eww get selected_session)
+# selected_session stays "" until the user actually clicks a dropdown row -
+# the trigger label only *displays* the first session as a fallback via a
+# yuck ternary, it never writes that fallback back into the variable, so
+# without this an untouched dropdown silently authenticated into whatever
+# sessions.sh happens to list last (the tty entry) instead of the session
+# actually shown on screen
+if [ -z "$session" ]; then
+    session=$($eww get sessions_json | jq -r '.[0].name')
+fi
 pw=$($eww get pw)
 
 if printf '%s\n' "$pw" | python3 "$dir/greetd-auth.py" "$session"; then

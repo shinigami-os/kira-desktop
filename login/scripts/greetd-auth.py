@@ -79,6 +79,10 @@ def main():
     cmd, env = resolve_session(session_name)
 
     sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    # a hang anywhere in this exchange (e.g. greetd never replying to
+    # cancel_session in some edge case) would otherwise leave the password
+    # field stuck on the checking animation forever, with no way out
+    sock.settimeout(10)
     try:
         sock.connect(sock_path)
 

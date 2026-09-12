@@ -9,14 +9,6 @@ cd "$dir" || exit 1
 export GDK_BACKEND=wayland
 export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/greetd}"
 
-# cage has no config file of its own for input devices - it relies on
-# libxkbcommon's env-var fallback (the same mechanism sway/hyprland use
-# under the hood when a config sets xkb_layout), so the layout has to be
-# set here or the greeter's password field types in a plain US layout
-# regardless of what the rest of Kira is configured for
-export XKB_DEFAULT_LAYOUT=fr
-export XKB_DEFAULT_VARIANT=azerty
-
 eww kill 2>/dev/null
 sleep 0.3
 # eww's default config lookup is $XDG_CONFIG_HOME/eww / ~/.config/eww, neither
