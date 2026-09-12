@@ -17,4 +17,8 @@ done
 # always-present fallback: a plain login shell on the VT, no compositor
 out=$(printf '%s\n' "$out" | jq '. + [{"name":"tty","cmd":["__TTY__"],"type":"console"}]')
 
-printf '%s\n' "$out"
+# -c is required, not cosmetic: deflisten treats each line of stdout as one
+# complete value, and jq's default pretty-printer spreads a single array
+# across many lines, which eww then tries to parse line-by-line as JSON
+# fragments ("Failed to turn `]` into a value of type json-value" etc.)
+printf '%s\n' "$out" | jq -c .
