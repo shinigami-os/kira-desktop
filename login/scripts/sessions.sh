@@ -6,6 +6,11 @@ out="[]"
 
 for f in /usr/share/wayland-sessions/*.desktop /usr/share/xsessions/*.desktop; do
     [ -f "$f" ] || continue
+    # uwsm-wrapped entries (e.g. hyprland-uwsm.desktop) duplicate a compositor
+    # that's already listed under its own plain entry, and uwsm isn't part of
+    # how Kira actually launches sessions - skip them rather than showing two
+    # confusingly similar rows for the same DE
+    case "$f" in *uwsm*) continue ;; esac
     name=$(sed -n 's/^Name=//p' "$f" | head -n1)
     exec_line=$(sed -n 's/^Exec=//p' "$f" | head -n1 | sed 's/ %[a-zA-Z]//g')
     [ -n "$name" ] && [ -n "$exec_line" ] || continue
