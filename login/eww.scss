@@ -283,4 +283,13 @@ window {
   opacity: 1;
 }
 
+// no transition on purpose - the whole point is an instant, unambiguous cut
+// the moment the password is confirmed correct, not a fade
+.login-black {
+  background-color: transparent;
+}
+
+.login-black.black-show {
+  background-color: #000000;
+}
 

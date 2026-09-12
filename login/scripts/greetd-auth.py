@@ -105,6 +105,13 @@ def main():
             recv(sock)
             sys.exit(1)
 
+        # instant black frame the moment the password is confirmed correct -
+        # start_session below can take a few seconds (compositor + session
+        # bus + audio server all spinning up), and leaving the login screen
+        # sitting there with no feedback made a correct password look
+        # indistinguishable from a hung one
+        eww("update", "auth_state=success")
+
         send(sock, {"type": "start_session", "cmd": cmd, "env": env})
         resp = recv(sock)
         if resp.get("type") == "error":

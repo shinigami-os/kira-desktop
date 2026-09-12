@@ -10,8 +10,9 @@
 (defvar dropdown_open false)
 (defvar selected_session "")
 (defvar pw "")
-;; idle | checking | error - a correct password hands off to the session
-;; directly, there's no "success" state to animate through
+;; idle | checking | error | success - success shows one flat black frame,
+;; instantly, so there's no ambiguous moment where the greeter just sits
+;; there while the real session is loading behind it
 (defvar auth_state "idle")
 (defvar auth_msg "")
 
@@ -84,6 +85,13 @@
     (eventbox :onclick "scripts/power.sh suspend" :cursor "pointer"
       (box :class "login-power-btn" (label :class "login-power-icon" :text "")))))
 
+;; plain black, no fade, no pulsing dot - StartSession can take a few seconds
+;; (compositor + session bus + audio server all spinning up), and with
+;; nothing shown in that gap a correct password looked indistinguishable
+;; from a hung one
+(defwidget login-black []
+  (box :class "login-black ${auth_state == "success" ? "black-show" : ""}" :hexpand true :vexpand true))
+
 ;; ══════════════════════════ window ══════════════════════════
 
 ;; a plain toplevel, not a layer-shell surface: cage is a single-app kiosk
@@ -104,4 +112,5 @@
     (login-clock)
     (login-password)
     (login-session)
-    (login-power)))
+    (login-power)
+    (login-black)))
