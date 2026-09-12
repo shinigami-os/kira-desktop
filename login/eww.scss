@@ -130,14 +130,16 @@ window {
 }
 
 .login-pw-sweep.sweep-run {
-  min-width: 32%;
+  /* GTK CSS has no % units at all ("Unit is missing" on parse) - 32%/68% of
+     the 390px password field's own width, converted to fixed px by hand */
+  min-width: 125px;
   opacity: 1;
   animation: sweep 1s cubic-bezier(0.6, 0.1, 0.4, 0.9) infinite;
 }
 
 @keyframes sweep {
-  0%   { margin-left: 0%; }
-  100% { margin-left: 68%; }
+  0%   { margin-left: 0px; }
+  100% { margin-left: 265px; }
 }
 
 .login-pw-row.pw-error {
