@@ -194,7 +194,7 @@ window {
 
 // ── session dropdown, bottom left ──
 .login-session {
-  margin: 0 0 50px 60px;
+  margin: 0 0 50px 28px;
   // same overlay-allocation issue as the clock: give real session names like
   // "Hyprland (uwsm-managed)" room instead of letting GTK ellipsize them
   min-width: 320px;
