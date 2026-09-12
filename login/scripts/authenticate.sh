@@ -1,0 +1,30 @@
+#!/bin/sh
+# fired by the password field's Enter key. Keeps the entered password off argv
+# entirely (piped to python over stdin) - eww's own :onchange updates already
+# put it briefly on an `eww update` command line each keystroke, so this is a
+# minor extra precaution, not a hard guarantee.
+dir="$(dirname "$0")"
+attempt_file="/tmp/kira-login-attempts"
+
+eww update auth_state=checking auth_msg=""
+
+session=$(eww get selected_session)
+pw=$(eww get pw)
+
+if printf '%s\n' "$pw" | python3 "$dir/greetd-auth.py" "$session"; then
+    rm -f "$attempt_file"
+    exit 0
+fi
+
+attempt=$(( $(cat "$attempt_file" 2>/dev/null || echo 0) + 1 ))
+echo "$attempt" > "$attempt_file"
+
+case "$attempt" in
+    1) msg="incorrect" ;;
+    2) msg="still no" ;;
+    *) msg="try again" ;;
+esac
+
+eww update auth_state=error auth_msg="$msg" pw=""
+sleep 1.3
+eww update auth_state=idle
