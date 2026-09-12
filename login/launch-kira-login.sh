@@ -19,8 +19,10 @@ sleep 0.5
 eww --config "$dir" open login
 
 # eww daemon backgrounds itself; wait on it so this script (cage's child)
-# stays alive for the duration of the greeter session
-pid=$(pgrep -f "eww daemon" | head -n1)
+# stays alive for the duration of the greeter session. exact-name match,
+# not -f: the daemon's own argv (eww --config <dir> daemon) doesn't contain
+# the literal substring "eww daemon"
+pid=$(pgrep -x eww | head -n1)
 if [ -n "$pid" ]; then
     while kill -0 "$pid" 2>/dev/null; do
         sleep 1

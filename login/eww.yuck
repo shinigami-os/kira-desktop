@@ -74,11 +74,16 @@
 
 ;; a plain toplevel, not a layer-shell surface: cage is a single-app kiosk
 ;; compositor (like it already was for regreet), it just fullscreens whatever
-;; one xdg-shell client it's handed, no wlr-layer-shell involved
+;; one xdg-shell client it's handed, no wlr-layer-shell involved. "%" sizing
+;; only resolves against a monitor for layer-shell windows - on a plain
+;; toplevel it computed to 0x0, so wlroots refused the surface outright. cage
+;; fullscreens its client regardless of requested size, so a concrete
+;; placeholder size is enough; 1920x1080 just avoids a visible resize flash
+;; on the common case.
 (defwindow login
   :monitor 0
   :windowtype "normal"
-  :geometry (geometry :x "0px" :y "0px" :width "100%" :height "100%" :anchor "center")
+  :geometry (geometry :x "0px" :y "0px" :width "1920px" :height "1080px" :anchor "center")
   (overlay
     (login-bg)
     (login-clock)
