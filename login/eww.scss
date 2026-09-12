@@ -194,7 +194,7 @@ window {
 
 // ── session dropdown, bottom left ──
 .login-session {
-  margin: 0 0 50px 28px;
+  margin: 0 0 50px 12px;
   // same overlay-allocation issue as the clock: give real session names like
   // "Hyprland (uwsm-managed)" room instead of letting GTK ellipsize them
   min-width: 320px;
@@ -283,32 +283,4 @@ window {
   opacity: 1;
 }
 
-// ── success scrim ──
-.login-scrim {
-  background-color: transparent;
-  transition: background-color 550ms ease;
-}
 
-.login-scrim.scrim-show {
-  background-color: rgba(8, 4, 20, 0.96);
-}
-
-.login-scrim-dot {
-  min-width: 0px;
-  min-height: 0px;
-  background-color: $accent;
-  opacity: 0;
-}
-
-.login-scrim.scrim-show .login-scrim-dot {
-  min-width: 10px;
-  min-height: 10px;
-  opacity: 1;
-  animation: dotpulse 1.5s ease-in-out infinite;
-}
-
-@keyframes dotpulse {
-  0%   { opacity: 0.3; }
-  50%  { opacity: 1; }
-  100% { opacity: 0.3; }
-}

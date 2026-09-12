@@ -91,13 +91,15 @@ def main():
             resp = recv(sock)
 
         if resp.get("type") == "error":
+            # a wrong password has to end this session cleanly, not just stop
+            # talking to greetd - closing the socket right after sending
+            # cancel_session, without waiting for its reply, looked to greetd
+            # like the greeter itself had crashed, and its crash-recovery
+            # response (restarting the whole greeter) is what showed up as
+            # "the greeter just restarts" on a bad password
             send(sock, {"type": "cancel_session"})
+            recv(sock)
             sys.exit(1)
-
-        # tell the UI to start its success animation now - StartSession itself
-        # blocks until the real session takes over the display, which can take
-        # a moment (compositor + shell startup)
-        eww("update", "auth_state=success")
 
         send(sock, {"type": "start_session", "cmd": cmd, "env": env})
         resp = recv(sock)

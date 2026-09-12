@@ -10,7 +10,8 @@
 (defvar dropdown_open false)
 (defvar selected_session "")
 (defvar pw "")
-;; idle | checking | error | success
+;; idle | checking | error - a correct password hands off to the session
+;; directly, there's no "success" state to animate through
 (defvar auth_state "idle")
 (defvar auth_msg "")
 
@@ -83,10 +84,6 @@
     (eventbox :onclick "scripts/power.sh suspend" :cursor "pointer"
       (box :class "login-power-btn" (label :class "login-power-icon" :text "")))))
 
-(defwidget login-scrim []
-  (box :class "login-scrim ${auth_state == "success" ? "scrim-show" : ""}" :hexpand true :vexpand true :halign "fill" :valign "fill"
-    (box :class "login-scrim-dot" :halign "center" :valign "center")))
-
 ;; ══════════════════════════ window ══════════════════════════
 
 ;; a plain toplevel, not a layer-shell surface: cage is a single-app kiosk
@@ -107,5 +104,4 @@
     (login-clock)
     (login-password)
     (login-session)
-    (login-power)
-    (login-scrim)))
+    (login-power)))
