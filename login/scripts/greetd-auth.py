@@ -13,8 +13,24 @@ import struct
 import subprocess
 import sys
 
-USERNAME = "kira"
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+def resolve_username():
+    # Kira's installer creates exactly one real account (whatever name the
+    # user picked, not necessarily "kira" - that's only the live ISO's own
+    # default) - the lowest UID in the normal user range is that account,
+    # the same way useradd -m assigns it on a fresh install
+    candidates = sorted(
+        (u for u in pwd.getpwall() if 1000 <= u.pw_uid < 60000),
+        key=lambda u: u.pw_uid,
+    )
+    if not candidates:
+        raise RuntimeError("no local user found (uid 1000-59999)")
+    return candidates[0].pw_name
+
+
+USERNAME = resolve_username()
 
 
 def send(sock, msg):
