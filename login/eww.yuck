@@ -85,13 +85,6 @@
     (eventbox :onclick "scripts/power.sh suspend" :cursor "pointer"
       (box :class "login-power-btn" (label :class "login-power-icon" :text "")))))
 
-;; plain black, no fade, no pulsing dot - StartSession can take a few seconds
-;; (compositor + session bus + audio server all spinning up), and with
-;; nothing shown in that gap a correct password looked indistinguishable
-;; from a hung one
-(defwidget login-black []
-  (box :class "login-black ${auth_state == "success" ? "black-show" : ""}" :hexpand true :vexpand true))
-
 ;; ══════════════════════════ window ══════════════════════════
 
 ;; a plain toplevel, not a layer-shell surface: cage is a single-app kiosk
@@ -112,5 +105,4 @@
     (login-clock)
     (login-password)
     (login-session)
-    (login-power)
-    (login-black)))
+    (login-power)))
