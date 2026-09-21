@@ -9,6 +9,12 @@ cd "$dir" || exit 1
 export GDK_BACKEND=wayland
 export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/greetd}"
 
+# cage relies on its client exiting for it to exit too - without an explicit
+# trap, this script (and the eww daemon it started) can outlive whatever
+# signal cage sends on shutdown, which is what greetd is actually waiting on
+# before the real session starts
+trap 'echo "$(date +%s.%N) launch-kira-login.sh got TERM" >> /tmp/kira-login-timing.log; eww kill 2>/dev/null; exit 0' TERM INT
+
 eww kill 2>/dev/null
 sleep 0.3
 # eww's default config lookup is $XDG_CONFIG_HOME/eww / ~/.config/eww, neither
