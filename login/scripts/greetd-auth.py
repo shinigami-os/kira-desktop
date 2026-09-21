@@ -139,6 +139,14 @@ def main():
         if resp.get("type") == "error":
             eww("update", "auth_state=error")
             sys.exit(1)
+
+        # greetd doesn't kill the outgoing greeter on a successful login -
+        # start_session only schedules the new session and arms a 5-second
+        # fallback timer, on the assumption the greeter notices and exits
+        # itself immediately. regreet does that; this custom greeter never
+        # did, so every login sat through the full 5-second fallback before
+        # greetd lost patience and killed it for us.
+        subprocess.run(["pkill", "-TERM", "-f", "start-greeter.sh"], check=False)
     except Exception as exc:
         print(f"greetd-auth: {exc}", file=sys.stderr)
         sys.exit(1)
