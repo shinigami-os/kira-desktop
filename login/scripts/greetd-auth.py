@@ -12,8 +12,14 @@ import socket
 import struct
 import subprocess
 import sys
+import time
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+def log_timing(label):
+    with open("/tmp/kira-login-timing.log", "a") as f:
+        f.write(f"{time.time():.3f} {label}\n")
 
 
 def resolve_username():
@@ -121,8 +127,10 @@ def main():
             recv(sock)
             sys.exit(1)
 
+        log_timing("start_session sent")
         send(sock, {"type": "start_session", "cmd": cmd, "env": env})
         resp = recv(sock)
+        log_timing("start_session response received")
         if resp.get("type") == "error":
             eww("update", "auth_state=error")
             sys.exit(1)
