@@ -18,8 +18,13 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 def log_timing(label):
-    with open("/tmp/kira-login-timing.log", "a") as f:
+    path = "/tmp/kira-login-timing.log"
+    # this process runs as the greetd user, but kira-start-sleex appends to
+    # the same file as the real logged-in user right after - world-writable
+    # or that second write just fails silently on a permission error
+    with open(path, "a") as f:
         f.write(f"{time.time():.3f} {label}\n")
+    os.chmod(path, 0o666)
 
 
 def resolve_username():
