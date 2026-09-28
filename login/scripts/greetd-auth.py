@@ -140,6 +140,14 @@ def main():
             eww("update", "auth_state=error")
             sys.exit(1)
 
+        # sessions.sh reads this back next boot and sorts it to the front of
+        # the dropdown, so the greeter defaults to whatever was picked last
+        try:
+            with open("/var/lib/greetd/last-session", "w") as f:
+                f.write(session_name)
+        except OSError:
+            pass
+
         # greetd doesn't kill the outgoing greeter on a successful login -
         # start_session only schedules the new session and arms a 5-second
         # fallback timer, on the assumption the greeter notices and exits

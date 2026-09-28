@@ -28,6 +28,16 @@ done
 # always-present fallback: a plain login shell on the VT, no compositor
 out=$(printf '%s\n' "$out" | jq '. + [{"name":"tty","cmd":["__TTY__"],"type":"console"}]')
 
+# eww.yuck's dropdown/trigger fall back to sessions_json[0] whenever the user
+# hasn't clicked a row yet, so remembering the last successful login (written
+# by greetd-auth.py) is just a matter of sorting that entry to the front -
+# no eww-side state or extra var needed. sort_by is stable, so this only
+# ever reorders around the remembered name and leaves everything else as-is
+last=$(cat /var/lib/greetd/last-session 2>/dev/null || true)
+if [ -n "$last" ]; then
+    out=$(printf '%s\n' "$out" | jq --arg last "$last" 'sort_by(.name != $last)')
+fi
+
 # -c is required, not cosmetic: deflisten treats each line of stdout as one
 # complete value, and jq's default pretty-printer spreads a single array
 # across many lines, which eww then tries to parse line-by-line as JSON
