@@ -30,16 +30,27 @@ output_path = '~/.config/gtk-3.0/gtk.css'
 input_path = '~/.config/matugen/templates/gtk/gtk-colors.css'
 output_path = '~/.config/gtk-4.0/gtk.css'
 
+[templates.kde_colors]
+input_path = '~/.config/matugen/templates/kde/color.txt'
+output_path = '~/.local/state/sleex/user/generated/color.txt'
+
 [templates.wallpaper]
 input_path = '~/.config/matugen/templates/wallpaper.txt'
 output_path = '~/.local/state/sleex/user/generated/wallpaper/path.txt'
 
-# kde_colors, discord, vscode, zed and kitty templates were dropped here:
-# - kde_colors wrote the same generated/color.txt that switchwall.sh's own
-#   generate_colors_material.py --cache immediately overwrites right after,
-#   so matugen's own computation and write for it was always thrown away
-# - discord/vscode/zed/kitty theme apps not shipped in Kira's default stack,
-#   and the kitty template's post_hook spawned a subprocess on every single
-#   wallpaper/mode change regardless of whether kitty was even installed
-# None of these were part of the live QuickShell theme path, so dropping
-# them only cuts dead work off of every switchwall.sh run
+[templates.discord]
+input_path = '~/.config/matugen/templates/discord.css'
+output_path = '~/.config/vesktop/themes/discord.css'
+
+[templates.vscode]
+input_path = '~/.config/matugen/templates/vscode.json'
+output_path = "~/.vscode/extensions/sleex-theme/themes/sleex.json"
+
+[templates.zed]
+input_path = '~/.config/matugen/templates/zed.json'
+output_path = "~/.config/zed/themes/sleex.json"
+
+[templates.kitty]
+input_path = '~/.config/matugen/templates/kitty.conf'
+output_path = '~/.config/kitty/themes/Matugen.conf'
+post_hook = "kitty +kitten themes --reload-in=all Matugen"
