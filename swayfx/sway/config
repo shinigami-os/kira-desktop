@@ -186,9 +186,9 @@ layer_effects "notifications" {
 
 ### ═══════════════════ autostart ═══════════════════
 exec dbus-update-activation-environment --all
-exec /usr/bin/pipewire &
-exec /usr/bin/pipewire-pulse &
-exec /usr/bin/wireplumber &
+# pipewire-pulse and wireplumber both need pipewire's socket up first - this was
+# three separate unordered execs before, racing them against each other
+exec ~/.config/kira/audio.sh
 exec mako
 exec_always ~/.config/eww/launch-bars.sh
 exec swayidle -w \
