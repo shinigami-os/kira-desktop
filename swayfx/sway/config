@@ -24,6 +24,11 @@ input "type:keyboard" {
     xkb_numlock enabled
 }
 
+### ─── cursor ───
+# gtk-3.0/settings.ini sets this for GTK apps, but sway's own cursor (and
+# everything else using libwayland-cursor) needs its own directive
+seat seat0 xcursor_theme Bibata-Modern-Classic 24
+
 ### ─── output / wallpaper ───
 # force 100% - without this sway auto-picks a fractional scale on high-DPI panels
 output * scale 1
@@ -158,10 +163,26 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 
 ### ═══════════════════ layer_effects (per-island glass) ═══════════════════
-layer_effects "eww-bar"       blur enable; corner_radius 11
-layer_effects "eww-popup"     blur enable; corner_radius 13
-layer_effects "launcher"      blur enable; corner_radius 14
-layer_effects "notifications" blur enable; corner_radius 14
+# layer_effects only takes the brace-block form - the old inline "a; b" form
+# isn't valid syntax, it just failed to parse. "launcher" was never eww's
+# namespace either; eww.yuck calls all its popups/modals "eww-popup"/"eww-modal",
+# "notifications" is mako's own hardcoded layer-shell namespace.
+layer_effects "eww-bar" {
+    blur enable;
+    corner_radius 11;
+}
+layer_effects "eww-popup" {
+    blur enable;
+    corner_radius 13;
+}
+layer_effects "eww-modal" {
+    blur enable;
+    corner_radius 14;
+}
+layer_effects "notifications" {
+    blur enable;
+    corner_radius 14;
+}
 
 ### ═══════════════════ autostart ═══════════════════
 exec dbus-update-activation-environment --all

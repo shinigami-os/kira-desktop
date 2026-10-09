@@ -15,7 +15,10 @@ SHARED_COMPONENTS=""
 ACTIVE_DE=$(cat $HOME/.config/kira-desktop/active-de 2>/dev/null || echo "swayFX")
 
 case "$ACTIVE_DE" in
-    swayFX) DE_COMPONENTS="eww/bar.css eww/bar.yuck eww/launch-bars.sh foot/foot.ini fuzzel/fuzzel.ini gtk/gtk.css gtk/settings.ini mako/config xdg-desktop-portal/portals.conf sway/config swaylock/config" ;;
+    # paths matched the config tree as it existed when this was last touched - eww's
+    # files are eww.scss/eww.yuck now (not bar.css/bar.yuck), gtk moved to gtk-3.0/,
+    # and the locker has been hyprlock (hypr/hyprlock.conf), not swaylock, for a while
+    swayFX) DE_COMPONENTS="eww/eww.scss eww/eww.yuck eww/launch-bars.sh foot/foot.ini fuzzel/fuzzel.ini gtk-3.0/gtk.css gtk-3.0/settings.ini mako/config xdg-desktop-portal/portals.conf sway/config hypr/hyprlock.conf" ;;
     sleex)  DE_COMPONENTS="sleex/sleex.conf" ;;
 esac
 
