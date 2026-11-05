@@ -1,3 +1,0 @@
-#!/bin/sh
-cmd=$(printf '' | fuzzel --dmenu --prompt='run: ' --lines=0 --placeholder='enter command...')
-[ -n "$cmd" ] && foot -e sh -c "$cmd; read _"
