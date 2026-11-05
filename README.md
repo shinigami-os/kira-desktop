@@ -10,12 +10,12 @@ One lowercase folder per desktop environment at the repo root, plus shared DE-ag
 ```
 kira-desktop/
   swayfx/             SwayFX configs: sway, eww, foot, fuzzel, mako, hyprlock, gtk-3.0, xdg-desktop-portal
-  sleex/              Sleex configs: Hyprland, Kvantum, qt5ct/qt6ct, fontconfig, foot, fuzzel,
-                      matugen, starship, kdeglobals, anyrun, wlogout, and more
   scripts/            shared across every DE: kira-run, kira-theme, kira-start-<de> launchers
 ```
 
-The corresponding flux meta-package (`kira-desktop-swayFX`, `kira-desktop-sleex`) clones this repo fresh in its `%build` step and copies straight out of `<de>/` and `scripts/` - there's no static copy checked into `flux-recipes` to drift out of sync.
+`kira-desktop-swayFX-config` clones this repo fresh in its `%build` step and copies straight out of `swayfx/` and `scripts/` - there's no static copy checked into `flux-recipes` to drift out of sync.
+
+Sleex has no folder here: its user config is upstream's own `sleex-user-config`, installed by `kira-sleex`, with the few Kira-only tweaks applied as build-time patches in that recipe.
 
 `swayfx/kira/audio.sh` starts the PipeWire stack (pipewire → wireplumber → pipewire-pulse, in that order) under the session bus, killing any stale instances first and waiting for the PipeWire socket to appear before continuing. sway/config's autostart calls it instead of starting the three daemons itself.
 
@@ -24,7 +24,7 @@ The corresponding flux meta-package (`kira-desktop-swayFX`, `kira-desktop-sleex`
 Same release-based scheme as `flux`/`kira-base`: `YY.MM`, optionally `-N` for a hotfix release in that month (current: `26.10-1`). Tag with `git tag <version> && git push --tags`, no GitHub Release object needed.
 
 ## Status
-Both `swayfx/` and `sleex/` are populated and installed on real hardware via their respective flux meta-packages. See the [Kira Linux specification](https://github.com/shinigami-os) and the project roadmap.
+`swayfx/` is populated and installed on real hardware via its flux meta-package. See the [Kira Linux specification](https://github.com/shinigami-os) and the project roadmap.
 
 ## License
 MIT
